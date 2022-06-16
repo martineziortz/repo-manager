@@ -2,7 +2,7 @@ name: Update SonarCloud configuration
 concurrency: sonarcloud
 
 env:
-  TARGET_REPO_TAGS: laravel,debug
+  TARGET_REPO_TAGS: laravel
 
 on:
   pull_request:
