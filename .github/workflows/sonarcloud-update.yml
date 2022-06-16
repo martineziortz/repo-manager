@@ -142,7 +142,7 @@ jobs:
           token: ${{ secrets.REPO_PUSH_PAT }}
           delete-branch: true
           labels: update
-          branch: update/sonarcloud-${{ steps.hash_checks.outputs.hash-current }}
+          branch: update/sonarcloud-configuration
           commit-message: 'Update SonarCloud configuration'
           title: 'Update SonarCloud configuration'
           body: 'The upstream SonarCloud configuration was changed. The configuration available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
