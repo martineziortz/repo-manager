@@ -80,6 +80,12 @@ then
     gh repo clone "${owner}/${repo}" "${repodir}/${repo}"
 fi
 
+if [[ ! -d "${repodir}/${repo}" ]];
+then
+    echo "Unable to clone repo"
+    exit 1
+fi
+
 echo "Copying file into repository"
 cp "${BASH_SOURCE%/*}/${localpropertyfile}" "${repodir}/${repo}/${remotepropertyfile}"
 

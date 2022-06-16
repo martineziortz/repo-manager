@@ -1,0 +1,148 @@
+name: Update SonarCloud configuration
+concurrency: sonarcloud
+
+env:
+  TARGET_REPO_TAGS: laravel,debug
+
+on:
+  pull_request:
+    paths:
+      - 'tasks/sonarcloud/sonarcloud.properties'
+  push:
+    paths:
+      - 'tasks/sonarcloud/sonarcloud.properties'
+
+jobs:
+  sonarcloud-hash:
+    name: Add new property file hash
+    runs-on: ubuntu-latest
+    outputs:
+      commit_hash: ${{ steps.auto-commit-changes.outputs.commit_hash }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Generate hash
+        working-directory: ./tasks/sonarcloud
+        run: |
+          [ -d hashes ] || mkdir hashes
+          shasum sonarcloud.properties > hashes/`shasum sonarcloud.properties | awk '{print $1}'`.sha1
+
+      - name: Commit changes
+        id: auto-commit-changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Automatic update of SonarCloud configuration hash
+
+  sonarcloud-repos:
+    name: Get the list of repos to update
+    runs-on: ubuntu-latest
+    outputs:
+      repo-list: ${{ steps.set-repo-list.outputs.repo-list }}
+
+    steps:
+      - name: Get repostiory list
+        id: set-repo-list
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+        run: |
+          echo "::set-output name=repo-list::"$(gh search repos --topic="${TARGET_REPO_TAGS}" --owner="${GITHUB_REPOSITORY_OWNER}" --archived=0 -L 1000 --json=name --jq '{include: [ .[] ]}')
+
+  sonarcloud-update:
+    name: Update target repos
+    runs-on: ubuntu-latest
+    needs: 
+      - sonarcloud-hash
+      - sonarcloud-repos
+    strategy:
+      matrix: ${{ fromJson(needs.sonarcloud-repos.outputs.repo-list) }}
+
+    steps:
+      - name: Checkout manager code
+        uses: actions/checkout@v3
+        if: ${{ needs.sonarcloud-hash.outputs.commit_hash == 0 }}
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Checkout manager code with new hash
+        uses: actions/checkout@v3
+        if: ${{ needs.sonarcloud-hash.outputs.commit_hash != 0 }}
+        with:
+          ref: ${{ needs.sonarcloud-hash.outputs.commit_hash }}
+
+      - name: Checkout target code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository_owner }}/${{ matrix.name }}
+          token: '${{ secrets.REPO_PUSH_PAT }}'
+          path: ./repos/${{ matrix.name }}
+
+      - name: Property file checks
+        id: hash_checks
+        run: |
+          found=0
+          haslatest=0
+          hasmatch=0
+          currenthash=`shasum './tasks/sonarcloud/sonarcloud.properties' | awk '{print $1}'`
+          repohash=
+
+          if [[ -f 'repos/${{ matrix.name }}/.sonarcloud.properties' ]]; then
+            found=1
+            repohash=`shasum 'repos/${{ matrix.name }}/.sonarcloud.properties' | awk '{print $1}'`
+
+            for filename in ./tasks/sonarcloud/hashes/*.sha1;
+            do
+              file_hash=`awk '{print $1}' "${filename}"`
+              if [[ "$file_hash" == "$repohash" ]]; then
+                hasmatch=1
+                break
+              fi
+            done
+
+            if [[ "$repohash" == "$currenthash" ]]; then
+              haslatest=1
+            fi
+          fi
+
+          echo ::set-output name=has-latest::$haslatest
+          echo ::set-output name=has-match::$hasmatch
+          echo ::set-output name=was-found::$found
+          echo ::set-output name=hash-current::"$currenthash"
+          echo ::set-output name=hash-remote::"$repohash"
+
+          echo "has-latest: $haslatest"
+          echo "has-match: $hasmatch"
+          echo "was-found: $found"
+          echo "hash-current: $currenthash"
+          echo "hash-remote: $repohash"
+
+      - name: Copy file into repository
+        if: ${{ steps.hash_checks.outputs.has-latest == 0 }}
+        run: |
+          cp './tasks/sonarcloud/sonarcloud.properties' 'repos/${{ matrix.name }}/.sonarcloud.properties'
+
+      - name: Commit changes to branch
+        if: ${{ steps.hash_checks.outputs.has-latest == 0 && steps.hash_checks.outputs.has-match == 1 }}
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Automatic update of SonarCloud configuration hash
+          repository: ./repos/${{ matrix.name }}
+          file_pattern: .sonarcloud.properties
+
+      - name: Commit changes to pull request
+        if: ${{ steps.hash_checks.outputs.has-latest == 0 && steps.hash_checks.outputs.has-match == 0 }}
+        uses: peter-evans/create-pull-request@v4
+        with:
+          add-paths: |
+            .sonarcloud.properties
+          path: repos/${{ matrix.name }}
+          token: ${{ secrets.REPO_PUSH_PAT }}
+          delete-branch: true
+          labels: update
+          branch: update/sonarcloud-${{ steps.hash_checks.outputs.hash-current }}
+          commit-message: 'Update SonarCloud configuration'
+          title: 'Update SonarCloud configuration'
+          body: 'The upstream SonarCloud configuration was changed. The configuration available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
