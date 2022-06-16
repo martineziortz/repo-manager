@@ -125,7 +125,7 @@ jobs:
           cp './tasks/sonarcloud/sonarcloud.properties' 'repos/${{ matrix.name }}/.sonarcloud.properties'
 
       - name: Commit changes to branch
-        if: ${{ steps.hash_checks.outputs.has-latest == 0 && steps.hash_checks.outputs.has-match == 1 }}
+        if: ${{ steps.hash_checks.outputs.has-latest == 0 && (steps.hash_checks.outputs.has-match == 1 || steps.hash_checks.outputs.was-found == 0) }}
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Automatic update of SonarCloud configuration hash
