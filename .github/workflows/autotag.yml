@@ -5,7 +5,7 @@ concurrency:
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-  REPO_LIMIT: 100
+  REPO_LIMIT: 50
 
 on:
   workflow_dispatch:
