@@ -1,5 +1,7 @@
 name: Automatically tag repositories
-concurrency: autotag
+concurrency:
+  group: autotag
+  cancel-in-progress: true
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
