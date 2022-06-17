@@ -21,7 +21,7 @@ else:
     composer_data = json.load(f)
     f.close()
 
-labels = composer_data.get('keywords', [])
+labels = composer_data.get('keywords') or []
 
 for tag, needles in mapping_data.items():
     if len(tag) == 0:
