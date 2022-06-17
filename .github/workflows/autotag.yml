@@ -3,7 +3,6 @@ concurrency: autotag
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-  TARGET_REPO_TAGS: debug,bank
 
 on: workflow_dispatch
 
@@ -19,7 +18,6 @@ jobs:
         id: set-repo-list
         run: |
           echo "::set-output name=repo-list::"$(gh search repos \
-            --topic "${TARGET_REPO_TAGS}" \
             --owner '${{ github.repository_owner }}' \
             --archived=0 \
             --language php \
