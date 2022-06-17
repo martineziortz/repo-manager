@@ -46,11 +46,16 @@ jobs:
       - name: Fetch composer.json
         continue-on-error: true
         run: |
-          gh api "repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/composer.json" \
+          gh api 'repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/composer.json' \
             -H 'Accept: application/vnd.github.VERSION.raw' \
             --jq '{name, description, keywords}' > '${{ runner.temp }}/composer.json'
 
-      - name: dbg
+      - name: Update labels
         working-directory: ./tasks/autotag
         run: |
-          python parse-tags.py -r '${{ matrix.name }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'
+          labels=`python parse-tags.py -r '${{ matrix.name }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'`
+          echo "Updating with labels: $labels"
+          echo "$labels" | gh api 'repos/${{ github.repository_owner }}/${{ matrix.name }}/topics' \
+            --preview mercy \
+            -H 'Accept: application/vnd.github.v3+json' \
+            -X PUT --input -
