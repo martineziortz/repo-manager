@@ -36,6 +36,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Fetch composer.json
+        continue-on-error: true
         run: |
           gh api "repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/composer.json" \
             -H 'Accept: application/vnd.github.VERSION.raw' \

@@ -1,5 +1,6 @@
-import json
 import argparse
+import json
+import os
  
 parser = argparse.ArgumentParser(description='Figure out what tags should be on a repository', 
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -9,13 +10,16 @@ parser.add_argument('-c', '--composer-file', help='composer.json file path', req
 
 args = vars(parser.parse_args())
 
-f = open(args.get('tag_file'))
+f = open(args.get('tag_file'), 'r')
 mapping_data = json.load(f)
 f.close()
 
-f = open(args.get('composer_file'))
-composer_data = json.load(f)
-f.close()
+if (not os.path.exists(args.get('composer_file'))):
+    composer_data = json.loads('{}')
+else:
+    f = open(args.get('composer_file'), 'r')
+    composer_data = json.load(f)
+    f.close()
 
 labels = composer_data.get('keywords', [])
 
