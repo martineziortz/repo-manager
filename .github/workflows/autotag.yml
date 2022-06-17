@@ -3,8 +3,15 @@ concurrency: autotag
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+  REPO_LIMIT: 100
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+  push:
+    paths:
+      - 'tasks/autotag/*'
 
 jobs:
   get-repos:
@@ -21,7 +28,7 @@ jobs:
             --owner '${{ github.repository_owner }}' \
             --archived=0 \
             --language php \
-            --limit 100 \
+            --limit ${REPO_LIMIT} \
             --sort updated \
             --include-forks false \
             --json=name)
