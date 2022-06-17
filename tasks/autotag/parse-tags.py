@@ -38,7 +38,7 @@ for tag, needles in mapping_data.items():
         if (matches_repo or matches_composer_name or matches_composer_desc):
             labels.append(tag)
 
-labels = map(slugify, list(set(labels)))
+labels = list(set(map(slugify, labels)))
 labels.sort()
 
 print(json.dumps({'names': labels}))
