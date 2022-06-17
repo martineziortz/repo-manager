@@ -36,6 +36,7 @@ jobs:
   autotag:
     name: Update target repos
     runs-on: ubuntu-latest
+    concurrency: autotag-update
     needs: 
       - get-repos
     strategy:
