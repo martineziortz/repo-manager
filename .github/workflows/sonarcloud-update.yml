@@ -10,6 +10,8 @@ env:
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 2 * *'
   pull_request:
     paths:
       - 'tasks/sonarcloud/sonarcloud.properties'
