@@ -59,9 +59,16 @@ jobs:
             -H 'Accept: application/vnd.github.VERSION.raw' \
             --jq '{name, description, keywords}' > '${{ runner.temp }}/composer.json'
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+          cache-dependency-path: './tasks/autotag/requirements.txt'
+
       - name: Update labels
         working-directory: ./tasks/autotag
         run: |
+          pip install -r requirements.txt
           labels=`python parse-tags.py -r '${{ matrix.name }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'`
           echo "Updating with labels: $labels"
           echo "$labels" | gh api 'repos/${{ github.repository_owner }}/${{ matrix.name }}/topics' \

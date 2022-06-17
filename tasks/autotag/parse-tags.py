@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from slugify import slugify
  
 parser = argparse.ArgumentParser(description='Figure out what tags should be on a repository', 
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -31,11 +32,11 @@ for tag, needles in mapping_data.items():
             continue
 
         matches_repo = needle in args.get('repo_name')
-        matches_composer_name = needle in composer_data.get('name') or ''
-        matches_composer_desc = needle in composer_data.get('description') or ''
+        matches_composer_name = needle in (composer_data.get('name') or '')
+        matches_composer_desc = needle in (composer_data.get('description') or '')
 
         if (matches_repo or matches_composer_name or matches_composer_desc):
-            labels.append(tag)
+            labels.append(slugify(tag))
 
 labels = list(set(labels))
 labels.sort()
