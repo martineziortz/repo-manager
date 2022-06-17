@@ -39,39 +39,9 @@ jobs:
         run: |
           gh api "repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/composer.json" \
             -H 'Accept: application/vnd.github.VERSION.raw' \
-            --jq '{name, description, keywords}' > "${{ runner.temp }}/composer.json"
+            --jq '{name, description, keywords}' > '${{ runner.temp }}/composer.json'
 
       - name: dbg
-        shell: python
+        working-directory: ./tasks/autotag
         run: |
-          import json
-
-          f = open('tasks/autotag/tag-mapping.json')
-          mapping_data = json.load(f)
-          f.close()
-
-          f = open('${{ runner.temp }}/composer.json')
-          composer_data = json.load(f)
-          f.close()
-
-          labels = composer_data.get('keywords', [])
-
-          repo_name = '${{ matrix.name }}'
-
-          for tag, needles in mapping_data.items():
-              if len(tag) == 0:
-                  continue
-              for needle in needles:
-                  if len(needle) == 0:
-                      continue
-
-                  matches_repo = needle in repo_name
-                  matches_composer_name = needle in composer_data.get('names', '')
-                  matches_composer_desc = needle in composer_data.get('description', '')
-
-                  if (matches_repo or matches_composer_name or matches_composer_desc):
-                      labels.append(tag)
-
-          labels = list(set(labels))
-          labels.sort()
-          print(labels)
+          python parse-tags.py -r '${{ matrix.name }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'
