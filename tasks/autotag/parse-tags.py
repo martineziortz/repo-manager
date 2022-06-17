@@ -31,8 +31,8 @@ for tag, needles in mapping_data.items():
             continue
 
         matches_repo = needle in args.get('repo_name')
-        matches_composer_name = needle in composer_data.get('names', '')
-        matches_composer_desc = needle in composer_data.get('description', '')
+        matches_composer_name = needle in composer_data.get('names') or ''
+        matches_composer_desc = needle in composer_data.get('description') or ''
 
         if (matches_repo or matches_composer_name or matches_composer_desc):
             labels.append(tag)
