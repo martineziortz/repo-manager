@@ -18,7 +18,15 @@ jobs:
       - name: Get repostiory list
         id: set-repo-list
         run: |
-          echo "::set-output name=repo-list::"$(gh search repos --topic="${TARGET_REPO_TAGS}" --owner='${{ github.repository_owner }}' --archived=0 -L 100 --json=name)
+          echo "::set-output name=repo-list::"$(gh search repos \
+            --topic "${TARGET_REPO_TAGS}" \
+            --owner '${{ github.repository_owner }}' \
+            --archived=0 \
+            --language php \
+            --limit 100 \
+            --sort updated \
+            --include-forks false \
+            --json=name)
 
   autotag:
     name: Update target repos
