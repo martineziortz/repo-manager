@@ -40,4 +40,4 @@ for tag, needles in mapping_data.items():
 labels = list(set(labels))
 labels.sort()
 
-print(json.dumps(labels))
+print(json.dumps({'names': labels}))
