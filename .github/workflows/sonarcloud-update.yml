@@ -1,10 +1,15 @@
 name: Update SonarCloud configuration
-concurrency: sonarcloud
+concurrency:
+  group: sonarcloud
+  cancel-in-progress: true
 
 env:
+  GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
   TARGET_REPO_TAGS: laravel
+  REPO_LIMIT: 250
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'tasks/sonarcloud/sonarcloud.properties'
@@ -37,7 +42,7 @@ jobs:
         with:
           commit_message: Automatic update of SonarCloud configuration hash
 
-  sonarcloud-repos:
+  get-repos:
     name: Get the list of repos to update
     runs-on: ubuntu-latest
     outputs:
@@ -46,19 +51,26 @@ jobs:
     steps:
       - name: Get repostiory list
         id: set-repo-list
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
         run: |
-          echo "::set-output name=repo-list::"$(gh search repos --topic="${TARGET_REPO_TAGS}" --owner="${GITHUB_REPOSITORY_OWNER}" --archived=0 -L 1000 --json=name --jq '{include: [ .[] ]}')
+          echo "::set-output name=repo-list::"$(gh search repos \
+            --owner '${{ github.repository_owner }}' \
+            --topic="${TARGET_REPO_TAGS}" \
+            --archived=0 \
+            --limit ${REPO_LIMIT} \
+            --sort updated \
+            --include-forks false \
+            --json=name)
 
   sonarcloud-update:
     name: Update target repos
     runs-on: ubuntu-latest
     needs: 
       - sonarcloud-hash
-      - sonarcloud-repos
+      - get-repos
     strategy:
-      matrix: ${{ fromJson(needs.sonarcloud-repos.outputs.repo-list) }}
+      max-parallel: 5
+      matrix:
+        include: ${{ fromJson(needs.get-repos.outputs.repo-list) }}
 
     steps:
       - name: Checkout manager code
