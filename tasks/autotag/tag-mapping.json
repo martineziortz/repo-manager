@@ -1,0 +1,56 @@
+{
+    "drupal": [
+        "drupal"
+    ],
+    "laravel": [
+        "laravel"
+    ],
+    "playbetr": [
+        "playbetr"
+    ],
+    "provably-fair": [
+        "provable",
+        "provably"
+    ],
+    "casino": [
+        "casino",
+        "blackjack",
+        "dice",
+        "roulette",
+        "wheel",
+        "war",
+        "baccarat",
+        "bridge",
+        "craps"
+    ],
+    "games": [
+        "blackjack",
+        "dice",
+        "roulette",
+        "wheel",
+        "war",
+        "baccarat",
+        "bridge",
+        "craps"
+    ],
+    "gamecenter": [
+        "game-center",
+        "gamecenter"
+    ],
+    "gamebetr": [
+        "gamebetr"
+    ],
+    "paybetr": [
+        "paybetr"
+    ],
+    "unity": [
+        "unity"
+    ],
+    "auth": [
+        "auth"
+    ],
+    "tagging": [
+        "tag",
+        "taxonomy"
+    ]
+}
