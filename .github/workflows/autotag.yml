@@ -56,6 +56,5 @@ jobs:
           labels=`python parse-tags.py -r '${{ matrix.name }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'`
           echo "Updating with labels: $labels"
           echo "$labels" | gh api 'repos/${{ github.repository_owner }}/${{ matrix.name }}/topics' \
-            --preview mercy \
             -H 'Accept: application/vnd.github.v3+json' \
             -X PUT --input -
