@@ -4,7 +4,6 @@ concurrency: autotag
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
   REPO_LIMIT: 100
-  TARGET_REPO_TAGS: debug
 
 on:
   workflow_dispatch:
@@ -27,7 +26,6 @@ jobs:
         run: |
           echo "::set-output name=repo-list::"$(gh search repos \
             --owner '${{ github.repository_owner }}' \
-            --topic="${TARGET_REPO_TAGS}" \
             --archived=0 \
             --language php \
             --limit ${REPO_LIMIT} \
