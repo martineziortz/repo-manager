@@ -98,41 +98,17 @@ jobs:
       - name: Property file checks
         id: hash_checks
         run: |
-          found=0
-          haslatest=0
-          hasmatch=0
-          currenthash=`shasum './tasks/sonarcloud/sonarcloud.properties' | awk '{print $1}'`
-          repohash=
+          currenthash=`./bin/generate-hash.sh ./tasks/sonarcloud/sonarcloud.properties`
+          out=`python ./bin/check-hashed-file-status.py -r '${{ matrix.name }}' -d './tasks/sonarcloud/hashes' -c "$currenthash" -- './repos/${{ matrix.name }}/.sonarcloud.properties'`
 
-          if [[ -f 'repos/${{ matrix.name }}/.sonarcloud.properties' ]]; then
-            found=1
-            repohash=`shasum 'repos/${{ matrix.name }}/.sonarcloud.properties' | awk '{print $1}'`
+          echo $out | jq
 
-            for filename in ./tasks/sonarcloud/hashes/*.sha1;
-            do
-              file_hash=`awk '{print $1}' "${filename}"`
-              if [[ "$file_hash" == "$repohash" ]]; then
-                hasmatch=1
-                break
-              fi
-            done
-
-            if [[ "$repohash" == "$currenthash" ]]; then
-              haslatest=1
-            fi
-          fi
-
-          echo ::set-output name=has-latest::$haslatest
-          echo ::set-output name=has-match::$hasmatch
-          echo ::set-output name=was-found::$found
-          echo ::set-output name=hash-current::"$currenthash"
-          echo ::set-output name=hash-remote::"$repohash"
-
-          echo "has-latest: $haslatest"
-          echo "has-match: $hasmatch"
-          echo "was-found: $found"
-          echo "hash-current: $currenthash"
-          echo "hash-remote: $repohash"
+          for k in `echo $out | jq -r 'keys[]'`
+          do
+            v=`echo $out | jq -r ".[\"$k\"]"`
+            echo "::set-output name=$k::$v"
+            echo "set-output $k: $v"
+          done
 
       - name: Copy file into repository
         if: ${{ steps.hash_checks.outputs.has-latest == 0 }}
@@ -158,6 +134,6 @@ jobs:
           delete-branch: true
           labels: update
           branch: update/sonarcloud-configuration
-          commit-message: 'Update SonarCloud configuration'
+          commit-message: 'Automatic update of SonarCloud configuration'
           title: 'Update SonarCloud configuration'
           body: 'The upstream SonarCloud configuration was changed. The configuration available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
