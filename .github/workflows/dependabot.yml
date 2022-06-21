@@ -5,7 +5,7 @@ concurrency:
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-  TARGET_REPO_TAGS: laravel,debug
+  TARGET_REPO_TAGS: laravel
   REPO_LIMIT: 250
 
 on:
