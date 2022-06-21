@@ -12,7 +12,6 @@ parser.add_argument('files', metavar='FILE', nargs='+')
 
 args = vars(parser.parse_args())
 
-
 files=args.get('files') or []
 hash_dir=args.get('hash_dir')
 repo_name=args.get('repo_name')
@@ -23,6 +22,8 @@ hash_repository=None
 is_latest=False
 is_existing_match=False
 
+files = list(set(files))
+files.sort()
 for fn in files:
     files_found &= os.path.exists(fn)
 
