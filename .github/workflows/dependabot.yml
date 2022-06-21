@@ -98,47 +98,23 @@ jobs:
       - name: Property file checks
         id: hash_checks
         run: |
-          found=0
-          haslatest=0
-          hasmatch=0
           currenthash=`./bin/generate-hash.sh ./tasks/dependabot/dependabot-auto-merge.yml ./tasks/dependabot/dependabot.yml`
-          repohash=
+          out=`python ./bin/check-hashed-file-status.py -r '${{ matrix.name }}' -d './tasks/dependabot/hashes' -c "$currenthash" -- './repos/${{ matrix.name }}/.github/dependabot.yml' './repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'`
 
-          if [[ -f 'repos/${{ matrix.name }}/.github/dependaabot.yml' ]] && [[ -f 'repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml' ]]; then
-            found=1
-            repohash=`./bin/generate-hash.sh ./repos/${{ matrix.name }}/dependabot-auto-merge.yml ./repos/${{ matrix.name }}/dependabot.yml`
+          echo $out | jq
 
-            for filename in ./tasks/dependabot/hashes/*.sha1;
-            do
-              file_hash=`awk '{print $1}' "${filename}"`
-              if [[ "$file_hash" == "$repohash" ]]; then
-                hasmatch=1
-                break
-              fi
-            done
-
-            if [[ "$repohash" == "$currenthash" ]]; then
-              haslatest=1
-            fi
-          fi
-
-          echo ::set-output name=has-latest::$haslatest
-          echo ::set-output name=has-match::$hasmatch
-          echo ::set-output name=was-found::$found
-          echo ::set-output name=hash-current::"$currenthash"
-          echo ::set-output name=hash-remote::"$repohash"
-
-          echo "has-latest: $haslatest"
-          echo "has-match: $hasmatch"
-          echo "was-found: $found"
-          echo "hash-current: $currenthash"
-          echo "hash-remote: $repohash"
+          for k in `echo $out | jq -r 'keys[]'`
+          do
+            v=`echo $out | jq -r ".[\"$k\"]"`
+            echo "::set-output name=$k::$v"
+            echo "set-output $k: $v"
+          done
 
       - name: Copy file into repository
         if: ${{ steps.hash_checks.outputs.has-latest == 0 }}
         run: |
-          cp './tasks/dependabot/dependabot.yml' 'repos/${{ matrix.name }}/.github/dependabot.yml'
-          cp './tasks/dependabot/dependabot-auto-merge.yml' 'repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'
+          cp './tasks/dependabot/dependabot.yml' './repos/${{ matrix.name }}/.github/dependabot.yml'
+          cp './tasks/dependabot/dependabot-auto-merge.yml' './repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'
 
       - name: Commit changes to branch
         if: ${{ steps.hash_checks.outputs.has-latest == 0 && (steps.hash_checks.outputs.has-match == 1 || steps.hash_checks.outputs.was-found == 0) }}
@@ -160,6 +136,6 @@ jobs:
           delete-branch: true
           labels: update
           branch: update/dependabot-workflows
-          commit-message: 'Update of Dependabot workflows'
+          commit-message: 'Automatic update of Dependabot workflows'
           title: 'Update of Dependabot workflows'
           body: 'The upstream dependabot workflow was changed. The workflow available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
