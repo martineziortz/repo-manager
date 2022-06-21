@@ -1,23 +1,23 @@
-name: Update SonarCloud configuration
+name: Update dependabot automatic merging
 concurrency:
-  group: sonarcloud
+  group: dependabot
   cancel-in-progress: true
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-  TARGET_REPO_TAGS: laravel
+  TARGET_REPO_TAGS: laravel,debug
   REPO_LIMIT: 250
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 2 * *'
+    - cron: '0 0 3 * *'
   pull_request:
     paths:
-      - 'tasks/sonarcloud/sonarcloud.properties'
+      - 'tasks/dependabot/**.yml'
   push:
     paths:
-      - 'tasks/sonarcloud/sonarcloud.properties'
+      - 'tasks/dependabot/**.yml'
 
 jobs:
   generate-hash:
@@ -33,17 +33,17 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Generate hash
-        working-directory: ./tasks/sonarcloud
+        working-directory: ./tasks/dependabot
         run: |
           [ -d hashes ] || mkdir hashes
-          hash=`../../bin/generate-hash.sh sonarcloud.properties`
+          hash=`../../bin/generate-hash.sh dependabot-auto-merge.yml dependabot.yml`
           echo "${hash}" > "hashes/${hash}.sha1"
 
       - name: Commit changes
         id: auto-commit-changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Automatic update of SonarCloud configuration hash
+          commit_message: Automatic update of Dependabot workflow hashes
 
   get-repos:
     name: Get the list of repos to update
@@ -64,7 +64,7 @@ jobs:
             --include-forks false \
             --json=name)
 
-  sonarcloud-update:
+  config-update:
     name: Update target repos
     runs-on: ubuntu-latest
     needs: 
@@ -101,14 +101,14 @@ jobs:
           found=0
           haslatest=0
           hasmatch=0
-          currenthash=`shasum './tasks/sonarcloud/sonarcloud.properties' | awk '{print $1}'`
+          currenthash=`./bin/generate-hash.sh ./tasks/dependabot/dependabot-auto-merge.yml ./tasks/dependabot/dependabot.yml`
           repohash=
 
-          if [[ -f 'repos/${{ matrix.name }}/.sonarcloud.properties' ]]; then
+          if [[ -f 'repos/${{ matrix.name }}/.github/dependaabot.yml' ]] && [[ -f 'repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml' ]]; then
             found=1
-            repohash=`shasum 'repos/${{ matrix.name }}/.sonarcloud.properties' | awk '{print $1}'`
+            repohash=`./bin/generate-hash.sh ./repos/${{ matrix.name }}/dependabot-auto-merge.yml ./repos/${{ matrix.name }}/dependabot.yml`
 
-            for filename in ./tasks/sonarcloud/hashes/*.sha1;
+            for filename in ./tasks/dependabot/hashes/*.sha1;
             do
               file_hash=`awk '{print $1}' "${filename}"`
               if [[ "$file_hash" == "$repohash" ]]; then
@@ -137,27 +137,29 @@ jobs:
       - name: Copy file into repository
         if: ${{ steps.hash_checks.outputs.has-latest == 0 }}
         run: |
-          cp './tasks/sonarcloud/sonarcloud.properties' 'repos/${{ matrix.name }}/.sonarcloud.properties'
+          cp './tasks/dependabot/dependabot.yml' 'repos/${{ matrix.name }}/.github/dependabot.yml'
+          cp './tasks/dependabot/dependabot-auto-merge.yml' 'repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'
 
       - name: Commit changes to branch
         if: ${{ steps.hash_checks.outputs.has-latest == 0 && (steps.hash_checks.outputs.has-match == 1 || steps.hash_checks.outputs.was-found == 0) }}
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Automatic update of SonarCloud configuration
+          commit_message: Automatic update of Dependabot workflows
           repository: ./repos/${{ matrix.name }}
-          file_pattern: .sonarcloud.properties
+          file_pattern: .github/dependabot.yml .github/workflows/dependabot-auto-merge.yml
 
       - name: Commit changes to pull request
         if: ${{ steps.hash_checks.outputs.was-found == 1 && (steps.hash_checks.outputs.has-latest == 0 && steps.hash_checks.outputs.has-match == 0) }}
         uses: peter-evans/create-pull-request@v4
         with:
           add-paths: |
-            .sonarcloud.properties
+            .github/dependabot.yml
+            .github/workflows/dependabot-auto-merge.yml
           path: repos/${{ matrix.name }}
           token: ${{ secrets.REPO_PUSH_PAT }}
           delete-branch: true
           labels: update
-          branch: update/sonarcloud-configuration
-          commit-message: 'Update SonarCloud configuration'
-          title: 'Update SonarCloud configuration'
-          body: 'The upstream SonarCloud configuration was changed. The configuration available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
+          branch: update/dependabot-workflows
+          commit-message: 'Update of Dependabot workflows'
+          title: 'Update of Dependabot workflows'
+          body: 'The upstream dependabot workflow was changed. The workflow available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
