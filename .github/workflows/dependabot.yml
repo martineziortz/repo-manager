@@ -4,7 +4,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+  GITHUB_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
   TARGET_REPO_TAGS: laravel
   REPO_LIMIT: 250
 
@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/${{ matrix.name }}
-          token: '${{ secrets.REPO_PUSH_PAT }}'
+          token: '${{ secrets.REPO_MANAGER_PAT }}'
           path: ./repos/${{ matrix.name }}
 
       - name: Property file checks
@@ -133,7 +133,7 @@ jobs:
             .github/dependabot.yml
             .github/workflows/dependabot-auto-merge.yml
           path: repos/${{ matrix.name }}
-          token: ${{ secrets.REPO_PUSH_PAT }}
+          token: ${{ secrets.REPO_MANAGER_PAT }}
           delete-branch: true
           labels: update
           branch: update/dependabot-workflows
