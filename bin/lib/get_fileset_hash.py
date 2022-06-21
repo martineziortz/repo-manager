@@ -12,7 +12,6 @@ def get_fileset_hash(filenames):
     hashes = []
 
     filenames = list(set(filenames))
-    filenames.sort()
 
     # Get each file's hash.
     # This mimics shasum path/to/file | awk '{print $1}'
@@ -21,6 +20,11 @@ def get_fileset_hash(filenames):
         f = o.read()
         hashes.append(hashlib.sha1(f).hexdigest())
         o.close()
+
+    # Sort hashes so we always get the final hash in a deterministic order
+    # Filename sort can result in different hashes depending on the path to
+    # the last filename.
+    hashes.sort()
 
     # Get the hash of each hash
     hl = hashlib.new("sha1")
