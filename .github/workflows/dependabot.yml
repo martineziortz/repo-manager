@@ -113,6 +113,7 @@ jobs:
       - name: Copy file into repository
         if: ${{ steps.hash_checks.outputs.has-latest == 0 }}
         run: |
+          [ -d './repos/${{ matrix.name }}/.github/workflows/' ] || mkdir -p './repos/${{ matrix.name }}/.github/workflows/'
           cp './tasks/dependabot/dependabot.yml' './repos/${{ matrix.name }}/.github/dependabot.yml'
           cp './tasks/dependabot/dependabot-auto-merge.yml' './repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'
 
