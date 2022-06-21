@@ -36,7 +36,7 @@ jobs:
         working-directory: ./tasks/sonarcloud
         run: |
           [ -d hashes ] || mkdir hashes
-          hash=`../../bin/generate-hash.sh sonarcloud.properties`
+          hash=`python ../../bin/generate-hash.py -- sonarcloud.properties`
           echo "${hash}" > "hashes/${hash}.sha1"
 
       - name: Commit changes
@@ -98,7 +98,7 @@ jobs:
       - name: Property file checks
         id: hash_checks
         run: |
-          currenthash=`./bin/generate-hash.sh ./tasks/sonarcloud/sonarcloud.properties`
+          currenthash=`python ./bin/generate-hash.py -- ./tasks/sonarcloud/sonarcloud.properties`
           out=`python ./bin/check-hashed-file-status.py -r '${{ matrix.name }}' -d './tasks/sonarcloud/hashes' -c "$currenthash" -- './repos/${{ matrix.name }}/.sonarcloud.properties'`
 
           echo $out | jq

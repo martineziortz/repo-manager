@@ -36,7 +36,7 @@ jobs:
         working-directory: ./tasks/dependabot
         run: |
           [ -d hashes ] || mkdir hashes
-          hash=`../../bin/generate-hash.sh dependabot-auto-merge.yml dependabot.yml`
+          hash=`python ../../bin/generate-hash.py -- dependabot-auto-merge.yml dependabot.yml`
           echo "${hash}" > "hashes/${hash}.sha1"
 
       - name: Commit changes
@@ -98,7 +98,7 @@ jobs:
       - name: Property file checks
         id: hash_checks
         run: |
-          currenthash=`./bin/generate-hash.sh ./tasks/dependabot/dependabot-auto-merge.yml ./tasks/dependabot/dependabot.yml`
+          currenthash=`python ./bin/generate-hash.py -- ./tasks/dependabot/dependabot-auto-merge.yml ./tasks/dependabot/dependabot.yml`
           out=`python ./bin/check-hashed-file-status.py -r '${{ matrix.name }}' -d './tasks/dependabot/hashes' -c "$currenthash" -- './repos/${{ matrix.name }}/.github/dependabot.yml' './repos/${{ matrix.name }}/.github/workflows/dependabot-auto-merge.yml'`
 
           echo $out | jq

@@ -1,9 +1,9 @@
 import argparse
 import json
 import os
-import subprocess
+from lib.get_fileset_hash import get_fileset_hash
 
-parser = argparse.ArgumentParser(description='Determine status for files in a repository', 
+parser = argparse.ArgumentParser(description='Determine status for files in a repository',
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-r', '--repo-name', help='repository name', required=True)
 parser.add_argument('-c', '--current-hash', help='The hash of the current version of the file(s)', required=True)
@@ -22,13 +22,11 @@ hash_repository=None
 is_latest=False
 is_existing_match=False
 
-files = list(set(files))
-files.sort()
 for fn in files:
     files_found &= os.path.exists(fn)
 
 if (files_found):
-    hash_repository=subprocess.run(['./bin/generate-hash.sh'] + files, stdout=subprocess.PIPE).stdout.decode("utf-8").strip()
+    hash_repository=get_fileset_hash(files)
     if (os.path.exists(hash_dir + '/' + hash_repository + '.sha1')):
         is_existing_match=True
 
