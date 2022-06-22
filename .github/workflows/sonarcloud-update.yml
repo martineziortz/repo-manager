@@ -5,8 +5,6 @@ concurrency:
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-  TARGET_REPO_TAGS: laravel
-  REPO_LIMIT: 250
 
 on:
   workflow_dispatch:
@@ -22,47 +20,20 @@ on:
 jobs:
   generate-hash:
     name: Add new file hashes
-    runs-on: ubuntu-latest
-    outputs:
-      commit_hash: ${{ steps.auto-commit-changes.outputs.commit_hash }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Generate hash
-        working-directory: ./tasks/sonarcloud
-        run: |
-          [ -d hashes ] || mkdir hashes
-          hash=`python ../../bin/generate-hash.py -- sonarcloud.properties`
-          echo "${hash}" > "hashes/${hash}.sha1"
-
-      - name: Commit changes
-        id: auto-commit-changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Automatic update of SonarCloud configuration hash
+    uses: ./.github/workflows/add-new-hash.yml
+    with:
+      hash_files: sonarcloud.properties
+      task_dir: ./tasks/sonarcloud
+      github_ref: ${{ github.head_ref }}
 
   get-repos:
     name: Get the list of repos to update
-    runs-on: ubuntu-latest
-    outputs:
-      repo-list: ${{ steps.set-repo-list.outputs.repo-list }}
-
-    steps:
-      - name: Get repostiory list
-        id: set-repo-list
-        run: |
-          echo "::set-output name=repo-list::"$(gh search repos \
-            --owner '${{ github.repository_owner }}' \
-            --topic="${TARGET_REPO_TAGS}" \
-            --archived=0 \
-            --limit ${REPO_LIMIT} \
-            --sort updated \
-            --include-forks false \
-            --json=name)
+    uses: ./.github/workflows/get-repos.yml
+    with:
+      repository_owner: ${{ github.repository_owner }}
+      topics: "laravel"
+    secrets:
+      access-token: ${{ secrets.REPO_MANAGER_PAT }}
 
   sonarcloud-update:
     name: Update target repos
