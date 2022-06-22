@@ -16,7 +16,6 @@ on:
         type: string
         description: "The github reference to pull files from"
       commit_message:
-        required: true
         type: string
         description: "The message to use when saving hashes"
         default: "Automatic update of fileset hashes"

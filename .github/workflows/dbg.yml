@@ -6,17 +6,18 @@ env:
 on: workflow_dispatch
 
 jobs:
-  generate-hash:
-    uses: ./.github/workflows/add-new-hash.yml
+  get-repos:
+    name: Get the list of repos to update
+    uses: ./.github/workflows/get-repos.yml
     with:
-      hash_files: foo
-      task_dir:  ./tasks/dbg
-      github_ref: ${{ github.head_ref }}
-      commit_message: Automatic update of Dependabot workflow hashes
+      repository_owner: ${{ github.repository_owner }}
+      topics: "laravel"
+    secrets:
+      access-token: ${{ secrets.REPO_MANAGER_PAT }}
 
   show_output:
     runs-on: ubuntu-latest
     needs:
-      - generate-hash
+      - get-repos
     steps:
-      - run: echo ${{ needs.generate-hash.outputs.commit_hash }}
+      - run: echo ${{ needs.get-repos.outputs.repo-list }}

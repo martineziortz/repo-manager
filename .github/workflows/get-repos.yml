@@ -1,0 +1,47 @@
+name: Get a list of repositories
+
+on:
+  workflow_call:
+    inputs:
+      repository_owner:
+        required: true
+        type: string
+        description: "The repository owner"
+      topics:
+        type: string
+        description: "Topics to filter by"
+      limit:
+        type: number
+        description: "The maximum number of repositories to return"
+        default: 250
+    secrets:
+      access-token:
+        description: 'GitHub API token'
+        required: true
+    outputs:
+      repo-list:
+        description: "The list of repositories"
+        value: ${{ jobs.repo-list.outputs.repo-list }}
+
+jobs:
+  repo-list:
+    name: Get the list of repos to update
+    runs-on: ubuntu-latest
+    outputs:
+      repo-list: ${{ steps.set-repo-list.outputs.repo-list }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.access-token }}
+
+    steps:
+      - name: Get repostiory list
+        id: set-repo-list
+        run: |
+          echo ${{ inputs.access-token }}
+          echo "::set-output name=repo-list::"$(gh search repos \
+            --owner '${{ inputs.repository_owner }}' \
+            --topic '${{ inputs.topics }}' \
+            --limit '${{ inputs.limit }}' \
+            --archived=0 \
+            --sort updated \
+            --include-forks false \
+            --json=name)
