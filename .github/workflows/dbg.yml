@@ -1,0 +1,22 @@
+name: dbg
+
+env:
+  GITHUB_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
+
+on: workflow_dispatch
+
+jobs:
+  generate-hash:
+    uses: ./.github/workflows/add-new-hash.yml
+    with:
+      hash_files: foo
+      task_dir:  ./tasks/dbg
+      github_ref: ${{ github.head_ref }}
+      commit_message: Automatic update of Dependabot workflow hashes
+
+  show_output:
+    runs-on: ubuntu-latest
+    needs:
+      - generate-hash
+    steps:
+      - run: echo ${{ needs.generate-hash.outputs.commit_hash }}

@@ -1,0 +1,52 @@
+name: Add new fileset hashes
+
+on:
+  workflow_call:
+    inputs:
+      hash_files:
+        required: true
+        type: string
+        description: "The space separated list of files to hash"
+      task_dir:
+        required: true
+        type: string
+        description: "The folder to store the calculated hash"
+      github_ref:
+        required: true
+        type: string
+        description: "The github reference to pull files from"
+      commit_message:
+        required: true
+        type: string
+        description: "The message to use when saving hashes"
+        default: "Automatic update of fileset hashes"
+    outputs:
+      commit_hash:
+        description: "The commit hash after generating a new fileset hash"
+        value: ${{ jobs.generate-hash.outputs.commit_hash }}
+
+jobs:
+  generate-hash:
+    name: Add new file hashes
+    runs-on: ubuntu-latest
+    outputs:
+      commit_hash: ${{ steps.auto-commit-changes.outputs.commit_hash }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.github_ref }}
+
+      - name: Generate hash
+        working-directory: ${{ inputs.task_dir }}
+        run: |
+          [ -d hashes ] || mkdir hashes
+          hash=`python ../../bin/generate-hash.py -- ${{ inputs.hash_files }}`
+          echo "${hash}" > "./hashes/${hash}.sha1"
+
+      - name: Commit changes
+        id: auto-commit-changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ${{ inputs.commit_message }}
