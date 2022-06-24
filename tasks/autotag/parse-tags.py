@@ -68,10 +68,12 @@ composer_data = get_json_data(args.get("composer_file"))
 lock_data = get_json_data(composer_lock_file)
 
 labels = composer_data.get("keywords") or []
-labels.append(composer_data.get("type") or "")
+labels += [composer_data.get("type")] or []
 labels += get_labels_from_composer_lock_file(lock_data) or []
 labels += get_labels_from_composer_lock_file(lock_data, "packages-dev") or []
 
+# Text to parse for possible tag matches.
+# Uses the tag mapping file to look for partial text matches.
 checked_text = [
     args.get("repo_name"),
     (composer_data.get("name") or ""),
@@ -88,7 +90,10 @@ for tag, needles in mapping_data.items():
         if (any(needle in string for string in checked_text)):
             labels.append(tag)
 
+# Ensure unique items only
 labels = list(set(map(slugify, labels)))
+# Filter empty strings
+labels = [s for s in labels if s]
 labels.sort()
 
 print(json.dumps({"names": labels}))
