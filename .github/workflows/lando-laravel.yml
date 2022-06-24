@@ -90,7 +90,7 @@ jobs:
         if: ${{ steps.hash_checks.outputs.has-latest == 0 && (steps.hash_checks.outputs.has-match == 1 || steps.hash_checks.outputs.was-found == 0) }}
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Automatic update of Dependabot workflows
+          commit_message: Automatic update of Lando configuration
           repository: ./repos/${{ matrix.name }}
           file_pattern: .lando.dist.yml .lando/repman.env
 
@@ -105,7 +105,7 @@ jobs:
           token: ${{ secrets.REPO_MANAGER_PAT }}
           delete-branch: true
           labels: update
-          branch: update/dependabot-workflows
-          commit-message: 'Automatic update of Dependabot workflows'
-          title: 'Update of Dependabot workflows'
-          body: 'The upstream dependabot workflow was changed. The workflow available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
+          branch: update/lando-configuration
+          commit-message: 'Automatic update of Lando configuration'
+          title: 'Update of Lando configuration'
+          body: 'The upstream Lando configuration was changed. The configuration available in this repository did not match a known hash of a previous file. Review the new changes and incorporate them if appropriate.'
