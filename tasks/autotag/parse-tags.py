@@ -67,6 +67,7 @@ mapping_data = get_json_data(args.get("tag_file"))
 composer_data = get_json_data(args.get("composer_file"))
 lock_data = get_json_data(composer_lock_file)
 
+# autotag workflow needs to be adjusted to add/remove composer file information
 labels = composer_data.get("keywords") or []
 labels += [composer_data.get("type")]
 labels += get_labels_from_composer_lock_file(lock_data) or []

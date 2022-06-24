@@ -52,12 +52,18 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Fetch composer.json
+      - name: Fetch composer files
         continue-on-error: true
         run: |
-          gh api 'repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/composer.json' \
-            -H 'Accept: application/vnd.github.VERSION.raw' \
-            --jq '{name, description, keywords}' > '${{ runner.temp }}/composer.json'
+          for F in composer.json composer.lock
+          do
+            gh api "repos/${{ github.repository_owner }}/${{ matrix.name }}/contents/${F}" \
+              -H 'Accept: application/vnd.github.VERSION.raw' > "${{ runner.temp }}/${F}"
+            if [ $? -eq 1 ]
+            then
+              rm "${{ runner.temp }}/${F}"
+            fi
+          done
 
       - uses: actions/setup-python@v4
         with:
