@@ -1,4 +1,4 @@
-name: bank
+name: laravel-lando
 recipe: laravel
 config:
   php: '7.4'
