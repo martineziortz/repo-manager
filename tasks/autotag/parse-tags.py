@@ -68,7 +68,7 @@ composer_data = get_json_data(args.get("composer_file"))
 lock_data = get_json_data(composer_lock_file)
 
 labels = composer_data.get("keywords") or []
-labels += [composer_data.get("type")] or []
+labels += [composer_data.get("type")]
 labels += get_labels_from_composer_lock_file(lock_data) or []
 labels += get_labels_from_composer_lock_file(lock_data, "packages-dev") or []
 
@@ -90,10 +90,12 @@ for tag, needles in mapping_data.items():
         if (any(needle in string for string in checked_text)):
             labels.append(tag)
 
-# Ensure unique items only
-labels = list(set(map(slugify, labels)))
 # Filter empty strings
 labels = [s for s in labels if s]
+# Ensure labels are valid patterns
+labels = map(slugify, labels)
+# Ensure unique items only
+labels = list(set(labels))
 labels.sort()
 
 print(json.dumps({"names": labels}))
