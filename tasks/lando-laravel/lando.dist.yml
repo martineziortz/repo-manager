@@ -17,7 +17,7 @@ services:
     build:
       - composer config -g repo.dbdnet composer 'https://dbdnet.repo.repman.io'
     build_as_root:
-      - curl -sL https://deb.nodesource.com/setup_17.x | bash -
+      - curl -sL https://deb.nodesource.com/setup_18.x | bash -
       - apt-get install -y nodejs libgmp-dev re2c libmhash-dev libmcrypt-dev file
       - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
       - docker-php-ext-configure gmp
