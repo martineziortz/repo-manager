@@ -5,6 +5,7 @@ concurrency:
 
 env:
     GITHUB_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
+    GH_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
 
 on:
   workflow_dispatch:
@@ -76,6 +77,16 @@ jobs:
               ./bin/packages/copy-modified-files.sh "$package" "./cache/repos/${{ matrix.repository }}"
               echo "::endgroup::"
             done
+
+        - name: Rate limit check
+          run: |
+            gh api rate_limit
+
+        - name: Rate limit check
+          env:
+            GH_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+          run: |
+              gh api rate_limit
 
         - name: Create pull request
           id: cpr
