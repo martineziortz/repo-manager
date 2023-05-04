@@ -53,7 +53,7 @@ jobs:
       needs:
         - get-outdated-repos
       strategy:
-        max-parallel: 5
+        max-parallel: 1
         matrix:
           repository: ${{ fromJson(needs.get-outdated-repos.outputs.repos) }}
 
@@ -77,16 +77,6 @@ jobs:
               ./bin/packages/copy-modified-files.sh "$package" "./cache/repos/${{ matrix.repository }}"
               echo "::endgroup::"
             done
-
-        - name: Rate limit check
-          run: |
-            gh api -i rate_limit
-
-        - name: Rate limit check
-          env:
-            GH_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
-          run: |
-              gh api -i rate_limit
 
         - name: Create pull request
           id: cpr
