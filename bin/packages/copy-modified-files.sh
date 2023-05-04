@@ -7,6 +7,11 @@ bindir=`dirname ${BASH_SOURCE[0]}`
 
 . $bindir'/package-include.sh'
 
+if [[ -z "$package" ]]; then
+    error "No package provided"
+    exit 3
+fi
+
 if [[ ! -d "$destination" ]]; then
     error "Destination $destination does not exist"
     exit 1

@@ -13,5 +13,10 @@ bindir=`dirname ${BASH_SOURCE[0]}`
 
 . $bindir'/package-include.sh'
 
+if [[ -z $package ]]; then
+    error "No package provided"
+    exit 0
+fi
+
 topic_filter=$(./$bindir/get-package-topic-filters.sh "$package")
 jq -r 'with_entries( select( .value | ['$topic_filter'] | all ) ) | keys[]' "$repos_file"

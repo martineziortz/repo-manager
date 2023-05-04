@@ -6,4 +6,4 @@ repo="$*"
 
 bindir=`dirname ${BASH_SOURCE[0]}`
 
-grep -w -f <(./bin/packages/get-repo-packages.sh "$repos_file" "$repo") <(./bin/packages/get-modified-packages.sh)
+grep -w -f <($bindir/get-repo-packages.sh "$repos_file" "$repo") <($bindir/get-modified-packages.sh)
