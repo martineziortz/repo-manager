@@ -80,13 +80,13 @@ jobs:
 
         - name: Rate limit check
           run: |
-            gh api rate_limit
+            gh api -i rate_limit
 
         - name: Rate limit check
           env:
             GH_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
           run: |
-              gh api rate_limit
+              gh api -i rate_limit
 
         - name: Create pull request
           id: cpr
