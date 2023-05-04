@@ -1,0 +1,7 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  dependabot.yml: .github/dependabot.yml
+  dependabot-auto-merge.yml: .github/workflows/dependabot-auto-merge.yml

@@ -1,0 +1,6 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  sonarcloud.properties: .sonarcloud.properties

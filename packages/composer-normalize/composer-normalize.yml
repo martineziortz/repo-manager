@@ -1,0 +1,6 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  composer-normalize.yml: .github/workflows/composer-normalize.yml

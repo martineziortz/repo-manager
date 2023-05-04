@@ -1,0 +1,21 @@
+name: Update package hashes
+concurrency:
+  group: package-hashes
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'packages/**'
+
+jobs:
+  add-new-hashes:
+    name: Add or update package hashes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./bin/packages/update-package-hashes.sh
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Automatic update of hashes"

@@ -1,0 +1,7 @@
+---
+filter:
+  topics:
+    - laravel
+    - library
+files:
+  update-parent.yml: .github/workflows/update-parent.yml

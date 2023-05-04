@@ -1,0 +1,103 @@
+name: Update repositories with package files
+concurrency:
+  group: package-files
+  cancel-in-progress: true
+
+env:
+    GITHUB_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'packages/**'
+
+jobs:
+    get-outdated-repos:
+        runs-on: ubuntu-latest
+        outputs:
+          repos: ${{ steps.repo-lookup.outputs.REPO_LIST }}
+        steps:
+          - uses: actions/checkout@v3
+
+          - name: Create cache folder
+            run: mkdir ./cache
+
+          - name: Cache repository information
+            id: cache-repos
+            uses: actions/cache@v3
+            with:
+              path: ./cache/
+              key: repos-and-tags
+
+          - name: Download all repos and tags
+            if: steps.cache-repos.outputs.cache-hit != 'true'
+            run: ./bin/get-repos.sh > ./cache/repos.json
+
+          - name: Find outdated repos
+            id: repo-lookup
+            run: |
+              ./bin/packages/get-modified-packages.sh | \
+                xargs -l1 ./bin/packages/get-package-repos.sh ./cache/repos.json | \
+                sort -u > ./outdated.txt
+              echo "REPO_LIST=$(jq -cMRn '[inputs]' ./outdated.txt)" >> "$GITHUB_OUTPUT"
+
+          - name: View outdated repositories
+            run: |
+              jq . <<< '${{ steps.repo-lookup.outputs.REPO_LIST }}'
+
+    update-outdated-repos:
+      runs-on: ubuntu-latest
+      name: Update ${{ matrix.repository }}
+      needs:
+        - get-outdated-repos
+      strategy:
+        max-parallel: 5
+        matrix:
+          repository: ${{ fromJson(needs.get-outdated-repos.outputs.repos) }}
+
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Create repository folder
+          run: mkdir -p ./cache/repos
+
+        - name: Load repository cache
+          uses: actions/cache@v3
+          with:
+            path: ./cache/
+            key: repos-and-tags
+
+        - name: Copy changed files
+          run: |
+            ./bin/clone-or-sync.sh "${{ github.repository_owner }}" "${{ matrix.repository }}" "./cache/repos"
+            for package in $(./bin/packages/get-package-intersect.sh "./cache/repos.json" "${{ matrix.repository }}"); do
+              echo "::group::Copying files for $package"
+              ./bin/packages/copy-modified-files.sh "$package" "./cache/repos/${{ matrix.repository }}"
+              echo "::endgroup::"
+            done
+
+        - name: Create pull request
+          id: cpr
+          uses: peter-evans/create-pull-request@v5
+          with:
+            title: '[BUILD] Automatic update of managed files'
+            commit-message: '[BUILD] Automatic update of managed files'
+            delete-branch: true
+            branch: update-managed-files
+            branch-suffix: timestamp
+            path: ./cache/repos/${{ matrix.repository }}
+            token: ${{ secrets.REPO_PUSH_PAT }}
+            assignees: |
+              swichers
+            labels: |
+              update
+              automated pr
+            body: |
+              The upstream managed configuration was changed.
+
+        - name: Automatically merge pull request
+          if: ${{ steps.cpr.outputs.pull-request-number }}
+          run: gh pr merge --squash --auto --delete-branch --repo "${{ github.repository_owner }}/${{ matrix.repository }}" "${{ steps.cpr.outputs.pull-request-number }}"
+          env:
+            GH_TOKEN: ${{ secrets.REPO_PUSH_PAT }}

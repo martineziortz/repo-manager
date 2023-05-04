@@ -1,0 +1,21 @@
+name: Update dependabot package
+
+on:
+  push:
+    paths:
+      - '.github/workflows/dependabot-auto-merge.yml'
+      - '.github/dependabot.yml'
+
+jobs:
+  update-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Copy files
+        run: |
+          cp .github/workflows/dependabot-auto-merge.yml packages/dependabot/files/
+          cp .github/dependabot.yml packages/dependabot/files/
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[BUILD] Update dependabot'

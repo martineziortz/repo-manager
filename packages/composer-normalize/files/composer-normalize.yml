@@ -1,0 +1,37 @@
+name: Normalize composer
+
+on:
+  push:
+    paths:
+      - composer.json
+      - composer.lock
+
+jobs:
+  composer-normalize:
+    name: composer-normalize
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer-normalize
+          coverage: none
+          fail-fast: true
+
+      - name: Normalize composer
+        run: |
+          composer config optimize-autoloader true
+          composer config preferred-install dist
+          composer config sort-packages true
+          composer config prefer-stable true
+          composer config minimum-stability dev
+          composer normalize
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[BUILD] Normalize composer'

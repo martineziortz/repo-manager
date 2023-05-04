@@ -1,0 +1,9 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  gitattributes: .gitattributes
+  editorconfig: .editorconfig
+  php_cs.dist.php: .php_cs.dist.php
+  php-cs-fixer.yml: .github/workflows/php-cs-fixer.yml
