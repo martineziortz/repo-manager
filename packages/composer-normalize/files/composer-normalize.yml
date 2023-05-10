@@ -10,6 +10,8 @@ jobs:
   composer-normalize:
     name: composer-normalize
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v3
@@ -22,14 +24,16 @@ jobs:
           coverage: none
           fail-fast: true
 
-      - name: Normalize composer
+      - name: Set composer config
         run: |
           composer config optimize-autoloader true
           composer config preferred-install dist
           composer config sort-packages true
           composer config prefer-stable true
           composer config minimum-stability dev
-          composer normalize
+
+      - name: Normalize composer
+        run: composer-normalize
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
