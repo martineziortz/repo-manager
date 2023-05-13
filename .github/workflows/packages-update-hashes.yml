@@ -8,6 +8,8 @@ on:
   push:
     paths:
       - 'packages/**'
+    branches:
+      - develop
 
 jobs:
   add-new-hashes:

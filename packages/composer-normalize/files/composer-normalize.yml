@@ -5,6 +5,8 @@ on:
     paths:
       - composer.json
       - composer.lock
+    branches:
+      - '!main'
 
 jobs:
   composer-normalize:
