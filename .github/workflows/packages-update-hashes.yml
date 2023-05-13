@@ -18,4 +18,5 @@ jobs:
       - run: ./bin/packages/update-package-hashes.sh
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Automatic update of hashes"
+          commit_message: '[BUILD] Automatic update of hashes'
+          commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
