@@ -1,0 +1,6 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  pull-request-linter.yml: .github/workflows/pull-request-linter.yml
