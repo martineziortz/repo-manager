@@ -1,0 +1,8 @@
+---
+filter:
+  topics:
+    - laravel
+files:
+  release-drafter.yml: .github/workflows/release-drafter.yml
+  release-drafter-config.yml: .github/release-drafter.yml
+  release-create-pr.yml: .github/workflows/release-create-pr.yml

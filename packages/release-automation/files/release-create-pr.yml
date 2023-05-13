@@ -1,0 +1,32 @@
+name: Create release pull request
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  create_pull_request:
+    name: Create release PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check for existing pull request
+        id: find-pull-request
+        uses: juliangruber/find-pull-request-action@v1
+        with:
+          base: main
+          branch: develop
+
+      - name: Create pull request
+        if: steps.find-pull-request.outputs.number == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create -B main -H develop --title '[BUILD] Merge develop to main'
