@@ -31,6 +31,7 @@ jobs:
           composer config sort-packages true
           composer config prefer-stable true
           composer config minimum-stability dev
+          composer config homepage '${{ github.server_url }}/${{ github.repository }}'
 
       - name: Normalize composer
         run: composer-normalize
