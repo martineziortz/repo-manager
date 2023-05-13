@@ -14,6 +14,8 @@ on:
   push:
     paths:
       - 'tasks/autotag/*'
+    branches:
+      - develop
 
 jobs:
   get-repos:
@@ -38,12 +40,12 @@ jobs:
   autotag:
     name: Update target repos
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - get-repos
     strategy:
       fail-fast: false
       max-parallel: 5
-      matrix: 
+      matrix:
         include: ${{ fromJson(needs.get-repos.outputs.repo-list) }}
 
     steps:

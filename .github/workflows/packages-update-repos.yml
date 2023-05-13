@@ -12,6 +12,8 @@ on:
   push:
     paths:
       - 'packages/**'
+    branches:
+      - develop
 
 jobs:
     get-outdated-repos:
