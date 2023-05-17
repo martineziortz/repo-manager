@@ -5,6 +5,7 @@ concurrency:
 
 env:
   GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+  GH_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
 
 on:
   workflow_dispatch:
