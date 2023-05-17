@@ -68,11 +68,10 @@ jobs:
         working-directory: ./tasks/autotag
         run: |
           labels=$(python parse-tags.py -r '${{ matrix.repository }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json')
-          echo "LABELS=$labels" >> "$GITHUB_OUTPUT"
-          echo "APPLY_LABELS=$(jq -cM '.names[] | length > 0' <<< $labels)" >> "$GITHUB_OUTPUT"
+          echo "LABELS=$(jq -cM '.names' <<< $labels)" >> "$GITHUB_OUTPUT"
 
       - name: Update labels
-        if: steps.new-labels.outputs.APPLY_LABELS == 'true'
+        if: steps.new-labels.outputs.LABELS != '[]'
         working-directory: ./tasks/autotag
         run: |
           labels="${{ steps.new-labels.outputs.LABELS }}"
