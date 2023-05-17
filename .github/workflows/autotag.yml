@@ -65,6 +65,7 @@ jobs:
 
       - name: Get new labels
         id: new-labels
+        working-directory: ./tasks/autotag
         run: |
           labels=$(python parse-tags.py -r '${{ matrix.repository }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json')
           echo "LABELS=$labels" >> "$GITHUB_OUTPUT"
