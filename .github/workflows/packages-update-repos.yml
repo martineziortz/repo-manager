@@ -26,7 +26,6 @@ jobs:
         run: mkdir -p ./cache/repos
 
       - name: Cache repository information
-        id: cache-repos
         uses: actions/cache@v3
         with:
           path: ./cache/
