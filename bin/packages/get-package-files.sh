@@ -5,9 +5,9 @@ dest_paths_only="${2:-0}"
 
 . `dirname ${BASH_SOURCE[0]}`'/package-include.sh'
 
-if [[ -z $package ]]; then
+if [[ -z "$package" ]]; then
     error "No package provided"
-    exit 0
+    exit 3
 fi
 
 if [[ 1 -eq $dest_paths_only ]]; then

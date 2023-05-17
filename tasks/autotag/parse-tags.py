@@ -16,12 +16,6 @@ parser.add_argument("-c", "--composer-file",
 
 args = vars(parser.parse_args())
 
-mapping_data = json.loads("{}")
-composer_data = json.loads("{}")
-composer_path = os.path.dirname(args.get("composer_file")) or "."
-composer_lock_file = composer_path + "/composer.lock"
-
-
 def get_json_data(filename):
     data = None
     if (os.path.exists(filename)):
@@ -29,13 +23,24 @@ def get_json_data(filename):
             data = json.load(f)
     return data or json.loads("{}")
 
+def get_labels_from_composer_json_file(json_data, mapping_data, key="require"):
+    labels = []
 
-def get_labels_from_composer_lock_file(lock_data, key="packages"):
+    for package in json_data.get(key, []):
+        labels.extend(map_to_alternate_tags(package, mapping_data) or [])
+    return labels
+
+def get_labels_from_composer_lock_file(lock_data, mapping_data, key="packages"):
     labels = []
     for package in lock_data.get(key, []):
+        alternates = map_to_alternate_tags(package["name"], mapping_data)
+        if len(alternates) == 0:
+            continue
+
+        labels.extend(alternates)
+
         try:
-            tag = package["name"].split(
-                "/")[0] + "-" + get_major_version(package["version"])
+            version = get_major_version(package["version"])
         # Package versions might be things like dev-main, dev-develop#abc123, etc.
         # These will trigger a ValueError when attempting to parse. We currently
         # only care about stable major versions for tagging, so ignore things that
@@ -43,11 +48,9 @@ def get_labels_from_composer_lock_file(lock_data, key="packages"):
         except ValueError:
             pass
         else:
-            if package["name"] in ["laravel/framework", "drupal/core"]:
-                labels.append(tag)
+            labels.extend(map(lambda x: x + '-' + version, alternates))
 
     return labels
-
 
 def get_major_version(version):
     # Change v1.0-dev into 1.0-dev
@@ -62,34 +65,55 @@ def get_major_version(version):
         raise ValueError("Version format unsupported: " + str(version))
     return str(parsed.major)
 
+def map_to_alternate_tags(data, mapping_data, partial_match=False):
+    result = set()
+
+    if isinstance(data, str):
+        data = [data]
+
+    for item in data:
+        for tag, needles in mapping_data.items():
+            if partial_match and any(needle in item for needle in needles):
+                    result.add(tag)
+            elif not partial_match and any(needle == item for needle in needles):
+                    result.add(tag)
+    return list(result)
+
+def parse_composer(composer_file, mapping_data):
+    composer_data = get_json_data(composer_file)
+
+    composer_path = os.path.dirname(composer_file) or "."
+    composer_lock_file = composer_path + "/composer.lock"
+    lock_data = get_json_data(composer_lock_file)
+
+    checked_text = []
+    checked_text.extend([composer_data.get("name") or ""])
+    checked_text.extend([composer_data.get("description") or ""])
+
+    labels = []
+    labels.extend(composer_data.get("keywords") or [])
+    labels.extend([composer_data.get("type")])
+    labels.extend(get_labels_from_composer_json_file(composer_data, mapping_data) or [])
+    labels.extend(get_labels_from_composer_lock_file(lock_data, mapping_data) or [])
+    labels.extend(get_labels_from_composer_lock_file(lock_data, mapping_data, "packages-dev") or [])
+
+    return labels, checked_text
 
 mapping_data = get_json_data(args.get("tag_file"))
-composer_data = get_json_data(args.get("composer_file"))
-lock_data = get_json_data(composer_lock_file)
-
-# autotag workflow needs to be adjusted to add/remove composer file information
-labels = composer_data.get("keywords") or []
-labels += [composer_data.get("type")]
-labels += get_labels_from_composer_lock_file(lock_data) or []
-labels += get_labels_from_composer_lock_file(lock_data, "packages-dev") or []
 
 # Text to parse for possible tag matches.
-# Uses the tag mapping file to look for partial text matches.
 checked_text = [
-    args.get("repo_name"),
-    (composer_data.get("name") or ""),
-    (composer_data.get("description") or "")
+    args.get("repo_name")
 ]
 
-for tag, needles in mapping_data.items():
-    if len(tag) == 0:
-        continue
-    for needle in needles:
-        if len(needle) == 0:
-            continue
+labels = []
+if args.get("composer_file"):
+    new_labels, new_text = parse_composer(args.get("composer_file"), mapping_data)
+    labels.extend(new_labels)
+    checked_text.extend(new_text)
 
-        if (any(needle in string for string in checked_text)):
-            labels.append(tag)
+# Uses the tag mapping file to look for partial text matches.
+labels.extend(map_to_alternate_tags(checked_text, mapping_data, True))
 
 # Filter empty strings
 labels = [s for s in labels if s]

@@ -1,9 +1,11 @@
 {
     "drupal": [
-        "drupal"
+        "drupal",
+        "drupal/core"
     ],
     "laravel": [
-        "laravel"
+        "laravel",
+        "laravel/framework"
     ],
     "playbetr": [
         "playbetr"

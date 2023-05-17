@@ -1,0 +1,8 @@
+---
+description: |
+  Used for debugging scripts that need to interact with repositories without applying to every repository.
+filter:
+  topics:
+    - repo-debug
+files:
+  debug.txt: debug.txt
