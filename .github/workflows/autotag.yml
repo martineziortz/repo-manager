@@ -63,9 +63,17 @@ jobs:
           cache-dependency-path: './tasks/autotag/requirements.txt'
       - run: pip install -r ./tasks/autotag/requirements.txt
 
+      - name: Get new labels
+        id: new-labels
+        run: |
+          labels=$(python parse-tags.py -r '${{ matrix.repository }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json')
+          echo "LABELS=$labels" >> "$GITHUB_OUTPUT"
+          echo "APPLY_LABELS=$(jq '.names[] | length > 0' <<< $labels)" >> "$GITHUB_OUTPUT"
+
       - name: Update labels
+        if: steps.new-labels.outputs.APPLY_LABELS == 'true'
         working-directory: ./tasks/autotag
         run: |
-          labels=`python parse-tags.py -r '${{ matrix.repository }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json'`
+          labels="${{ steps.new-labels.outputs.LABELS }}"
           echo "Updating with labels: $labels"
           echo "$labels" | gh repo edit "${{ github.repository_owner }}/${{ matrix.repository }}" --add-topic
