@@ -61,7 +61,7 @@ jobs:
           python-version: '3.x'
           cache: 'pip'
           cache-dependency-path: './tasks/autotag/requirements.txt'
-      - run: pip install -r requirements.txt
+      - run: pip install -r ./tasks/autotag/requirements.txt
 
       - name: Update labels
         working-directory: ./tasks/autotag
