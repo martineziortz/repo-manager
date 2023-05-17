@@ -37,7 +37,7 @@ jobs:
     needs:
       - get-repos
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 1
       matrix:
         repository: ${{ fromJson(needs.get-repos.outputs.repos) }}
