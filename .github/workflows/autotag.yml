@@ -51,7 +51,7 @@ jobs:
           gh extension install mislav/gh-cp
           for F in composer.json composer.lock
           do
-            gh cp "${{ github.repository_owner }}/${{ matrix.repository }}" "${F}" "${{ runner.temp }}" || {
+            gh cp '${{ github.repository_owner }}/${{ matrix.repository }}' "${F}" '${{ runner.temp }}' || {
               rm "${{ runner.temp }}/${F}"
             }
           done
@@ -74,6 +74,6 @@ jobs:
         if: steps.new-labels.outputs.LABELS != '[]'
         working-directory: ./tasks/autotag
         run: |
-          labels="${{ steps.new-labels.outputs.LABELS }}"
+          labels='${{ steps.new-labels.outputs.LABELS }}'
           echo "Updating with labels: $labels"
-          echo "$labels" | gh repo edit "${{ github.repository_owner }}/${{ matrix.repository }}" --add-topic
+          gh repo edit '${{ github.repository_owner }}/${{ matrix.repository }}' --add-topic $(echo $labels | jq -r '. | @csv')
