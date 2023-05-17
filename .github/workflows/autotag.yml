@@ -69,7 +69,7 @@ jobs:
         run: |
           labels=$(python parse-tags.py -r '${{ matrix.repository }}' -t 'tag-mapping.json' -c '${{ runner.temp }}/composer.json')
           echo "LABELS=$labels" >> "$GITHUB_OUTPUT"
-          echo "APPLY_LABELS=$(jq '.names[] | length > 0 | tojson' <<< $labels)" >> "$GITHUB_OUTPUT"
+          echo "APPLY_LABELS=$(jq -cM '.names[] | length > 0 | tojson' <<< $labels)" >> "$GITHUB_OUTPUT"
 
       - name: Update labels
         if: steps.new-labels.outputs.APPLY_LABELS == 'true'
