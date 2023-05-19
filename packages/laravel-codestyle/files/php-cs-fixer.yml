@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - '**.php'
-    branches:
-      - '!main'
+    branches-ignore:
+      - main
 
 jobs:
   php-cs-fixer:
