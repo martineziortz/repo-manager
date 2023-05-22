@@ -1,4 +1,5 @@
 ---
+descriptions: Keeps Lando configured for Laravel projects
 filter:
   topics:
     - laravel-8

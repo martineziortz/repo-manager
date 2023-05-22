@@ -1,4 +1,5 @@
 ---
+description: Automatically apply dependency updates
 filter:
   topics:
     - laravel

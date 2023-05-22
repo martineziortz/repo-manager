@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Will either clone a fresh repository or update the repository if it exists.
+# Usage: clone-or-sync.sh dbd-net misc-repo-manager temp/misc-repo-manager
+# This can hit API limits so should be used with an access token instead of the default token.
 
 org_name=$1
 repo_name=$2

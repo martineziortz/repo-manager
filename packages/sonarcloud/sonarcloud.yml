@@ -1,4 +1,5 @@
 ---
+description: Customized SonarCloud configuration
 filter:
   topics:
     - laravel

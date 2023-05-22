@@ -1,4 +1,5 @@
 ---
+description: Automates creating releases PRs and tags
 filter:
   topics:
     - laravel

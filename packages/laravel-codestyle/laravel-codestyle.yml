@@ -1,4 +1,5 @@
 ---
+description: Manages code style related configs and workflows
 filter:
   topics:
     - laravel

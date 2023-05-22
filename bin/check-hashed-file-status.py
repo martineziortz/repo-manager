@@ -1,3 +1,5 @@
+# if has-latest = false && (has-match = true || was-found = false) then we found a previous hash/have new files and can safely commit
+# if was-found = true && (has-latest = false && has-match = false) then we have files but no hash match, might overwrite, should do a pr
 import argparse
 import json
 import os
@@ -42,6 +44,3 @@ result = {
 }
 
 print(json.dumps(result))
-
-# if has-latest = false && (has-match = true || was-found = false) then we found a previous hash/have new files and can safely commit
-# if was-found = true && (has-latest = false && has-match = false) then we have files but no hash match, might overwrite, should do a pr

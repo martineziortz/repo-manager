@@ -1,4 +1,5 @@
 ---
+description: Ensures PRs match a minimum set of standards
 filter:
   topics:
     - laravel
