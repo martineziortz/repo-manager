@@ -1,0 +1,11 @@
+---
+description: |
+  Automatically build and release unity games when merges happen
+filter:
+  topics:
+    - unity
+    - game
+    - ci-build
+files:
+  unity-build-game.yml: .github/workflows/unity-build-game.yml
+  unity-get-personal-license.yml: .github/workflows/unity-get-personal-license.yml
