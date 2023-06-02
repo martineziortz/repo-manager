@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.set-sha.outputs.SHORT_SHA }}
-      scenes: ${{ steps.list-scenes.outputs.SCENES }}
+      scripts: ${{ steps.build-scripts.outputs.SCRIPTS }}
       semver: ${{ steps.version.outputs.semver }}
     steps:
       - uses: actions/checkout@v3
@@ -19,11 +19,11 @@ jobs:
       - name: Fetch version history
         run: git fetch --tags
 
-      - name: Get available scenes
-        id: list-scenes
-        working-directory: ./Assets/Scenes/
+      - name: Get build scripts
+        id: build-scripts
+        working-directory: ./Assets/Editor/
         run: |
-          echo "SCENES=$(basename -s .unity $(ls -1 *.unity) | jq -R | \
+          echo "SCRIPTS=$(basename -s .cs $(ls -1 Build*.cs) | jq -R | \
             jq -sMc 'map({"name": ., "device": (if endswith("Desktop") then "desktop" elif endswith("Mobile") then "mobile" else "general" end) })')" >> "$GITHUB_OUTPUT"
 
       - name: Make short commit SHA
@@ -43,16 +43,16 @@ jobs:
           snapshot-suffix: alpha
 
   build:
-    name: Build ${{ matrix.scene.name }} [${{ matrix.platform }}] ✨
+    name: ${{ matrix.script.name }} [${{ matrix.platform }}] ✨
     runs-on: ubuntu-latest
     needs:
       - meta-info
     strategy:
         matrix:
             platform: [ WebGL ]
-            scene: ${{ fromJson(needs.meta-info.outputs.scenes) }}
+            script: ${{ fromJson(needs.meta-info.outputs.scripts) }}
     env:
-      BUILD_NAME: ${{ matrix.scene.name }}--${{ matrix.scene.device }}--${{ matrix.platform }}--${{ needs.meta-info.outputs.sha }}
+      BUILD_NAME: ${{ matrix.script.name }}--${{ matrix.script.device }}--${{ matrix.platform }}--${{ needs.meta-info.outputs.sha }}
     steps:
       - uses: actions/checkout@v3
 
@@ -76,7 +76,7 @@ jobs:
           version: ${{ needs.meta-info.outputs.semver }}
           targetPlatform: ${{ matrix.platform }}
           buildName: game
-          customParameters: '--scene ${{ matrix.scene.name }}'
+          buildMethod: ScriptedBuild.${{ matrix.script.name }}.BuildOptions
 
       - name: Archive build
         run: |
@@ -96,6 +96,9 @@ jobs:
     needs:
       - meta-info
       - build
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+      release_url: ${{ steps.release.outputs.url }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -103,6 +106,7 @@ jobs:
           path: build/
 
       - name: Create release [${{ needs.meta-info.outputs.semver }}]
+        id: release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
@@ -112,3 +116,18 @@ jobs:
           target_commitish: ${{ github.ref_name }}
           fail_on_unmatched_files: true
           files: build/**/*.tar.gz
+
+  deploy:
+    name: Deploy release
+    runs-on: ubuntu-latest
+    needs:
+      - meta-info
+      - release
+    steps:
+      - name: Deploy build
+        uses: distributhor/workflow-webhook@v3
+        env:
+          webhook_url: ${{ vars.UNITY_DEPLOY_URL }}
+          webhook_secret: ${{ secrets.UNITY_DEPLOY_SECRET }}
+          data: '{ "release": "${{ needs.meta-info.outputs.semver }}", "release_id": ${{ needs.release.outputs.release_id }}, "release_url": "${{ needs.release.outputs.release_url }}" }'
+          verbose: ${{ vars.UNITY_DEPLOY_VERBOSE }}

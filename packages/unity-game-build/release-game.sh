@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
+# Deploy the latest release of a given game.
+# Requires gh cli to be authenticated.
+#
+# Usage: release-game.sh bitbird 1.8.0-alpha.2 (environment [default staging]) (organization [default dbd-net]) (project_root [default /var/www/static.dbd.net])
 
-PROJECT_ROOT='/var/www/static.dbd.net'
+PROJECT_ROOT="${5:-/var/www/static.dbd.net}"
 
 RED="\e[1;31m"
 GREEN="\e[1;32m"
@@ -12,7 +16,7 @@ indent() { sed 's/^/  /'; }
 info() { echo -e "$1"; }
 warn() { echo -e "${YELLOW}${1}${COFF}"; }
 error() { echo -e "${RED}${1}${COFF}" >&2; exit 1; }
-usage() { echo; echo 'Usage: release-game.sh bitbird 1.8 (environment [default staging]) (organization [default dbd-net])'; echo; }
+usage() { echo; echo 'Usage: release-game.sh bitbird 1.8.0-alpha.2 (environment [default staging]) (organization [default dbd-net])'; echo; }
 
 install_release() {
     local device="$1"
@@ -83,6 +87,10 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 
 gh release download --skip-existing -R "$REPO" -p '*--*--*--*--*.tar.gz' -D "$DOWNLOAD_DIR" "$RELEASE_TAG"
+if [ $? -ne 0 ]; then
+  error "Error! No $RELEASE_TAG release found in $REPO!"
+fi
+
 for file in $(gh release view -R "$REPO" --json assets --jq '.assets[].name' "$RELEASE_TAG");
 do
     update_game "$file"

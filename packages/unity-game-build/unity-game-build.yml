@@ -7,5 +7,6 @@ filter:
     - game
     - ci-build
 files:
+  AbstractBuild.cs: Assets/Editor/AbstractBuild.cs
   unity-build-game.yml: .github/workflows/unity-build-game.yml
   unity-get-personal-license.yml: .github/workflows/unity-get-personal-license.yml
