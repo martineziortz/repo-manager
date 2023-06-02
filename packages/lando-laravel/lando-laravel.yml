@@ -6,4 +6,4 @@ filter:
     - project
 files:
   lando.dist.yml: .lando.dist.yml
-  repman.env: .lando/repman.env
+  composer-auth.env: .lando/composer-auth.env
