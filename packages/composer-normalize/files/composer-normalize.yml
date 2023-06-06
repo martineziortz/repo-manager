@@ -26,6 +26,16 @@ jobs:
           coverage: none
           fail-fast: true
 
+      - uses: swichers/configure-laravel-nova@v1
+        with:
+            user: ${{ secrets.NOVA_USER }}
+            token: ${{ secrets.NOVA_TOKEN }}
+
+      - uses: swichers/configure-repman@v1
+        with:
+          token: ${{ secrets.REPMAN_TOKEN }}
+          organization: dbdnet
+
       - name: Set composer config
         run: |
           composer config optimize-autoloader true
