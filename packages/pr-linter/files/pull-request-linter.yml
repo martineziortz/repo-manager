@@ -47,7 +47,7 @@ jobs:
       - merge-check
       - branch-check
     runs-on: ubuntu-latest
-    if: failure()
+    if: failure() && ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - name: Comment on Pull Request
         uses: actions/github-script@v6
