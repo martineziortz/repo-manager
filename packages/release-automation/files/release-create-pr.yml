@@ -1,4 +1,7 @@
 name: Create release pull request
+concurrency:
+  group: release-pr
+  cancel-in-progress: true
 
 on:
   push:
