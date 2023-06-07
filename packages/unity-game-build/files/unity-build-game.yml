@@ -120,6 +120,7 @@ jobs:
   deploy:
     name: Deploy release
     runs-on: ubuntu-latest
+    if: ${{ vars.UNITY_DEPLOY_ENABLED == 'true' }}
     needs:
       - meta-info
       - release
