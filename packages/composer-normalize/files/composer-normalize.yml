@@ -24,7 +24,6 @@ jobs:
           php-version: '8.2'
           tools: composer-normalize
           coverage: none
-          fail-fast: true
 
       - uses: swichers/configure-laravel-nova@v1
         with:
