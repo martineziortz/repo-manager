@@ -1,0 +1,32 @@
+name: Create new alpha tag
+concurrency:
+  group: alpha-tag
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  taggit:
+    name: Create alpha tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch version history
+        run: git fetch --tags
+
+      - name: Generate pre-release version
+        uses: bencatlab/autobashed-semver@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          bump-tag: true
+          file-update: false
+          enable-snapshot: true
+          snapshot-suffix: alpha
