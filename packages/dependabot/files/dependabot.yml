@@ -2,11 +2,31 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+registries:
+  repman:
+    type: composer-repository
+    url: "https://dbdnet.repo.repman.io"
+    username: token
+    password: "${{ secrets.REPMAN_TOKEN }}"
+  nova:
+    type: composer-repository
+    url: "https://nova.laravel.com"
+    username: "${{ secrets.NOVA_USER }}"
+    password: "${{ secrets.NOVA_TOKEN }}"
+
 updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "composer"
+    directory: "/"
+    registries: "*"
+    schedule:
+      interval: "daily"
     labels:
       - "dependencies"
