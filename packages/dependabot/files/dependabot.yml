@@ -3,19 +3,18 @@
 
 version: 2
 registries:
-  repman:
+  dbdnet.repo.repman.io:
     type: composer-repository
-    url: "https://dbdnet.repo.repman.io"
+    url: dbdnet.repo.repman.io
     username: token
-    password: "${{ secrets.REPMAN_TOKEN }}"
-  nova:
+    password: ${{ secrets.REPMAN_TOKEN }}
+  nova.laravel.com:
     type: composer-repository
-    url: "https://nova.laravel.com"
-    username: "${{ secrets.NOVA_USER }}"
-    password: "${{ secrets.NOVA_TOKEN }}"
+    url: nova.laravel.com
+    username: ${{ secrets.NOVA_USER }}
+    password: ${{ secrets.NOVA_TOKEN }}
 
 updates:
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
