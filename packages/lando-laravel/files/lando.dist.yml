@@ -30,10 +30,10 @@ services:
       - composer config -g repo.dbdnet composer 'https://dbdnet.repo.repman.io'
       - composer config -g repo.nova composer 'https://nova.laravel.com'
     build_as_root:
+      - curl -sL https://deb.nodesource.com/setup_18.x | bash -
       - apt update -yqq && apt install -y nodejs libgmp-dev libmhash-dev libmcrypt-dev libyaml-dev
       - docker-php-ext-configure gmp && docker-php-ext-install gmp
       - printf "\n" | pecl install mcrypt yaml && docker-php-ext-enable mcrypt yaml
-      - curl -sL https://deb.nodesource.com/setup_18.x | bash -
 
     overrides:
       environment:
