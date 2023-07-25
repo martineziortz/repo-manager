@@ -11,6 +11,7 @@ $rules = [
         'default' => 'single_space',
         'operators' => ['=>' => null],
     ],
+    'blank_lines_before_namespace' => false,
     'blank_line_after_namespace' => true,
     'blank_line_after_opening_tag' => true,
     'blank_line_before_statement' => [
