@@ -68,6 +68,9 @@ jobs:
           composer install --no-dev --ignore-platform-reqs --optimize-autoloader
           composer require '${{ needs.parse-composer-json.outputs.package_name }}' '^${{ steps.get_version.outputs.major }}.0' -W
 
+      - name: Verify new package version is installed
+        run: composer info -- '${{ needs.parse-composer-json.outputs.package_name }}' '${{ steps.get_version.outputs.version-without-v }}'
+
       - name: Create pull request
         id: cpr
         uses: peter-evans/create-pull-request@v5
