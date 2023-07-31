@@ -13,22 +13,17 @@ jobs:
     name: Check if automated
     runs-on: ubuntu-latest
     outputs:
-      automated_commit: ${{ steps.build_commit.outputs.skip == true || steps.dependabot_commit.outputs.skip == true || steps.actions_commit.outputs.skip == true }}
+      automated_commit: ${{ steps.build_commit.outputs.skip == true }}
     steps:
-      - name: Is commit automated
+      - name: Check if needs skip
         id: build_commit
-        if: startsWith(github.event.head_commit.message, '[BUILD]')
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is dependabot commit
-        id: dependabot_commit
-        if: github.event.head_commit.author.username == 'dependabot[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is github-actions commit
-        id: actions_commit
-        if: github.event.head_commit.author.username == 'github-actions[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
+        run: |
+          ./.github/skip-check.sh '${{ github.repository }}' \
+            '${{ github.event.head_commit.author.username }}' \
+            '${{ github.event.head_commit.message }}'
+          skip=$?
+          echo "skip=1" >> "$GITHUB_OUTPUT"
+          echo "skip set to: $skip"
 
   create_pull_request:
     name: Create release PR

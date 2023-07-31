@@ -8,3 +8,4 @@ files:
   release-drafter-config.yml: .github/release-drafter.yml
   release-create-pr.yml: .github/workflows/release-create-pr.yml
   release-create-alpha.yml: .github/workflows/release-create-alpha.yml
+  skip-check.sh: .github/skip-check.sh
