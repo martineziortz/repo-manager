@@ -23,7 +23,7 @@ jobs:
             '${{ github.event.head_commit.author.username }}' \
             '${{ github.event.head_commit.message }}'
           skip=$?
-          echo "skip=1" >> "$GITHUB_OUTPUT"
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
           echo "skip set to: $skip"
 
   create_pull_request:
