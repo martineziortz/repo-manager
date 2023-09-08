@@ -44,10 +44,8 @@ jobs:
           composer config prefer-stable true
           composer config minimum-stability dev
           composer config homepage "${{ github.server_url }}/dbd-net/$(basename "${{ github.repository }}")"
+          composer update --lock
           composer validate --strict
-          if [ ! "$?" -eq 0 ]; then
-            composer update --lock
-          fi
 
       - name: Normalize composer
         run: composer-normalize
