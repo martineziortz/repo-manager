@@ -19,7 +19,7 @@ jobs:
   update-outdated-repos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: gh auth setup-git
 
       - name: Create cache folder
