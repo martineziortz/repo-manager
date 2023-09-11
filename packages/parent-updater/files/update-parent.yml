@@ -65,7 +65,7 @@ jobs:
 
       - name: Update composer dependency
         run: |
-          composer install --no-dev --ignore-platform-reqs --optimize-autoloader
+          composer install --no-dev --ignore-platform-reqs --optimize-autoloader --no-scripts
           composer require '${{ needs.parse-composer-json.outputs.package_name }}' '^${{ steps.get_version.outputs.major }}.0' -W
 
       - name: Verify new package version is installed
