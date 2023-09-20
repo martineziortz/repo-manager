@@ -15,7 +15,7 @@ jobs:
     outputs:
       automated_commit: ${{ steps.build_commit.outputs.skip == true }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check if needs skip
         id: build_commit
         run: |
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check for existing pull request
         id: find-pull-request

@@ -15,7 +15,7 @@ jobs:
       parent_repos: ${{ steps.get-package-details.outputs.parent_repos }}
     steps:
       - name: Self checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get package details
         id: get-package-details
@@ -54,7 +54,7 @@ jobs:
           organization: dbdnet
 
       - name: Parent checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repository }}
           token: '${{ secrets.REPO_PUSH_PAT }}'
