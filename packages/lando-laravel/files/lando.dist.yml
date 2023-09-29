@@ -30,10 +30,14 @@ services:
       - composer config -g repo.dbdnet composer 'https://dbdnet.repo.repman.io'
       - composer config -g repo.nova composer 'https://nova.laravel.com'
     build_as_root:
-      - curl -sL https://deb.nodesource.com/setup_18.x | bash -
-      - apt update -yqq && apt install -y nodejs libgmp-dev libmhash-dev libmcrypt-dev libyaml-dev
-      - docker-php-ext-configure gmp && docker-php-ext-install gmp
-      - printf "\n" | pecl install mcrypt yaml && docker-php-ext-enable mcrypt yaml
+      - apt-get update && apt-get install -y ca-certificates curl gnupg
+      - mkdir -p /etc/apt/keyrings
+      - curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+      - echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+      - apt-get update && apt-get install -y nodejs libgmp-dev re2c libmhash-dev libmcrypt-dev file
+      - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+      - docker-php-ext-configure gmp
+      - docker-php-ext-install gmp
 
     overrides:
       environment:
