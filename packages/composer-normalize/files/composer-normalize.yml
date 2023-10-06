@@ -1,6 +1,7 @@
 name: Normalize composer
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - composer.json
