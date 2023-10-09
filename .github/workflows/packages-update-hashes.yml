@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: ./bin/packages/update-package-hashes.sh
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: '[BUILD] Automatic update of hashes'
           commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
