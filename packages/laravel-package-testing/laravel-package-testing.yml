@@ -1,0 +1,8 @@
+---
+description: Runs unit tests for Laravel packages
+filter:
+  topics:
+    - laravel
+    - library
+files:
+  run-tests.yml: .github/workflows/run-tests.yml

@@ -1,0 +1,11 @@
+name: Run Laravel tests
+
+on:
+  pull_request_target:
+  push:
+    branches:
+      - develop
+jobs:
+  shared-test-runner:
+    uses: dbd-net/misc-repo-manager/.github/workflows/laravel-package-run-tests.yml@develop
+    secrets: inherit

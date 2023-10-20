@@ -1,55 +1,54 @@
 name: Run tests
 
 on:
-    workflow_call:
+  workflow_call:
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        services:
-          redis:
-            image: redis
-            options: >-
-              --health-cmd "redis-cli ping"
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
-            ports:
-              - 6379:6379
-        strategy:
-            fail-fast: true
+  test:
+    name: Run PHPUnit
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
-                  coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: none
 
-            - name: Setup problem matchers
-              run: |
-                  echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-                  echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            - uses: swichers/configure-laravel-nova@v1
-              with:
-                  user: ${{ secrets.NOVA_USER }}
-                  token: ${{ secrets.NOVA_TOKEN }}
+      - uses: swichers/configure-laravel-nova@v1
+        with:
+          user: ${{ secrets.NOVA_USER }}
+          token: ${{ secrets.NOVA_TOKEN }}
 
-            - uses: swichers/configure-repman@v1
-              with:
-                  token: ${{ secrets.REPMAN_TOKEN }}
-                  organization: dbdnet
+      - uses: swichers/configure-repman@v1
+        with:
+          token: ${{ secrets.REPMAN_TOKEN }}
+          organization: dbdnet
 
-            - name: Install Dependencies
-              run: composer install -q --no-ansi --no-scripts --no-progress --ignore-platform-reqs --prefer-dist --no-interaction
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-scripts --no-progress --ignore-platform-reqs --prefer-dist --no-interaction
 
-            - name: Execute tests (Unit and Feature tests) via PHPUnit
-              run: vendor/bin/testbench package:test --parallel
-              env:
-                REDIS_HOST: localhost
-                REDIS_PORT: 6379
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        run: vendor/bin/testbench package:test --parallel
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
