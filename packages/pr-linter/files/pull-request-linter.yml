@@ -10,66 +10,6 @@ permissions:
   pull-requests: read
 
 jobs:
-  title-check:
-    name: Includes Jira ticket
-    runs-on: ubuntu-latest
-    steps:
-      - uses: deepakputhraya/action-pr-title@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          regex: '[?[\w]+-[\d]{1,4}]?:? \S+'
-
-  merge-check:
-    name: No merge commits
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Check for merge commits
-        uses: NexusPHP/no-merge-commits@v1.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  branch-check:
-    name: Not working from `develop`
-    runs-on: ubuntu-latest
-    if: github.base_ref == 'develop' && github.base_ref == github.head_ref
-    steps:
-      - name: No feature branch used
-        run: |
-          echo '::error::Working branch is the same as the base branch'
-          exit 1
-
-  comment:
-    permissions: write-all
-    needs:
-      - title-check
-      - merge-check
-      - branch-check
-    runs-on: ubuntu-latest
-    if: failure() && ${{ github.actor != 'dependabot[bot]' }}
-    steps:
-      - name: Comment on Pull Request
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.REPO_PUSH_PAT }}
-          script: |
-            const { owner, repo, number } = context.issue;
-
-            let body = "❌ This Pull Request does not meet the minimum requirements.\n\nEnsure the following:\n\n";
-
-            if ("${{ needs.title-check.result }}" == "failure") {
-              body += "* The name of the pull request must start with the Jira ticket. ex: \`EXAM-123: A useful description here\`.\n"
-            }
-
-            if ("${{ needs.merge-check.result }}" == "failure") {
-              body += "* That there are no merge commits. Use rebase to clean your pull request if there are merge commits.\n"
-            }
-
-            if ("${{ needs.branch-check.result }}" == "failure") {
-              body += "* That you are working out of a feature/bug/hotfix branch instead of \`develop\` directly. The name of this branch does not matter, but it can be useful to name them after your Jira ticket.\n";
-            }
-
-            body += "\n\nThese mistakes must be resolved.";
-
-            github.rest.issues.createComment({ owner, repo, issue_number: number, body });
+  pull-request-linter:
+    uses: dbd-net/misc-repo-manager/.github/workflows/shared-pull-request-linter.yml@develop
+    secrets: inherit
