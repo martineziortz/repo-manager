@@ -1,0 +1,94 @@
+name: Update parent repo
+
+on:
+  workflow_call:
+
+jobs:
+  parse-composer-json:
+    runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.get-package-details.outputs.package_name }}
+      parent_repos: ${{ steps.get-package-details.outputs.parent_repos }}
+    steps:
+      - name: Self checkout
+        uses: actions/checkout@v4
+
+      - name: Get package details
+        id: get-package-details
+        run: |
+          echo "package_name=$( jq -Mcr .name composer.json )" >> "$GITHUB_OUTPUT"
+          echo "parent_repos=$( jq -Mcr '.extra.dbdci."push-releases-to"  | if type=="array" then . else [. ] end' composer.json )" >> "$GITHUB_OUTPUT"
+
+  update-parent-repo:
+    runs-on: ubuntu-latest
+    name: Update ${{ matrix.repository }}
+    needs:
+      - parse-composer-json
+    if: ${{ needs.parse-composer-json.outputs.parent_repos != 'null' }}
+    permissions:
+      contents: write
+    strategy:
+      max-parallel: 1
+      matrix:
+        repository: ${{ fromJson(needs.parse-composer-json.outputs.parent_repos) }}
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+
+      - uses: swichers/configure-laravel-nova@v1
+        with:
+          user: ${{ secrets.NOVA_USER }}
+          token: ${{ secrets.NOVA_TOKEN }}
+
+      - uses: swichers/configure-repman@v1
+        with:
+          token: ${{ secrets.REPMAN_TOKEN }}
+          organization: dbdnet
+
+      - name: Parent checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          token: '${{ secrets.REPO_PUSH_PAT }}'
+
+      - name: Get latest release version number
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Update composer dependency
+        run: |
+          composer install --no-dev --ignore-platform-reqs --optimize-autoloader --no-scripts
+          composer require '${{ needs.parse-composer-json.outputs.package_name }}' '^${{ steps.get_version.outputs.major }}.0' -W
+
+      - name: Verify new package version is installed
+        run: composer info -- '${{ needs.parse-composer-json.outputs.package_name }}' '${{ steps.get_version.outputs.version-without-v }}'
+
+      - name: Create pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          add-paths: |
+            composer.json
+            composer.lock
+          title: '[BUILD] Update ${{ github.repository }} to ${{ github.ref_name }}'
+          commit-message: '[BUILD] Update ${{ github.repository }} to ${{ github.ref_name }}'
+          body: |
+            Automated update based on a release tag being created.
+          assignees: |
+            swichers
+          token: ${{ secrets.REPO_PUSH_PAT }}
+          delete-branch: true
+          labels: |
+            update
+            automated pr
+          branch: update/${{ github.repository }}-${{ steps.get_version.outputs.major }}.0
+
+      - name: Automatically merge pull request
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr merge --squash --auto --delete-branch --repo '${{ matrix.repository }}' '${{ steps.cpr.outputs.pull-request-number }}'
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
