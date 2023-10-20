@@ -8,19 +8,19 @@ jobs:
     name: Check for PHPUnit
     runs-on: ubuntu-latest
     outputs:
-      found: steps.has-phpunit.outputs.has_phpunit != ''
+      found: steps.has-phpunit.outputs.hash != ''
     steps:
       - uses: actions/checkout@v4
-      - id: has-phpunit
-        run: |
-          echo "has_phpunit=${{ hashFiles('phpunit.xml.dist') }}" >> "$GITHUB_OUTPUT"
+      - name: Check for phpunit.xml.dist
+        id: has-phpunit
+        run: echo "hash=${{ hashFiles('phpunit.xml.dist') }}" >> "$GITHUB_OUTPUT"
 
   run-tests:
     name: Run PHPUnit
     runs-on: ubuntu-latest
     needs:
       - check-has-phpunit
-    if: needs.check-has-phpunit.outputs.found == 'true'
+    if: needs.check-has-phpunit.outputs.found != 0
 
     services:
       redis:
@@ -34,6 +34,7 @@ jobs:
           - 6379:6379
 
     steps:
+      - run: echo "found ${{ needs.check-has-phpunit.outputs.found }}"
       - name: Checkout code
         uses: actions/checkout@v4
 
