@@ -9,12 +9,6 @@ permissions:
   contents: read
 
 jobs:
-  update_release_draft:
-    permissions:
-      contents: write
-      pull-requests: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  draft-new-release:
+    uses: dbd-net/misc-repo-manager/.github/workflows/shared-release-drafter.yml@develop
+    secrets: inherit
