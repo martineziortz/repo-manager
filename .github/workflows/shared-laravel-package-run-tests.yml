@@ -77,7 +77,6 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/testbench package:test --parallel
         env:
-          APP_ENV: testing
           DB_PASSWORD: root
           DB_CONNECTION: mysql
           REDIS_HOST: localhost
