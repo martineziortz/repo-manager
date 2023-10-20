@@ -79,5 +79,6 @@ jobs:
         env:
           APP_ENV: testing
           DB_PASSWORD: root
+          DB_CONNECTION: mysql
           REDIS_HOST: localhost
           REDIS_PORT: 6379
