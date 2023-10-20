@@ -9,23 +9,5 @@ on:
 
 jobs:
   php-cs-fixer:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Run PHP CS Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
-        with:
-          args: --config=.php_cs.dist.php --allow-risky=yes
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: '[BUILD] Apply code style fixes'
-          commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
+    uses: dbd-net/misc-repo-manager/.github/workflows/shared-php-cs-fixer.yml@develop
+    secrets: inherit
