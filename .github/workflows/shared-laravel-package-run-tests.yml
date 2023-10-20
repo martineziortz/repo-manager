@@ -8,12 +8,17 @@ jobs:
     name: Check for PHPUnit
     runs-on: ubuntu-latest
     outputs:
-      found: ${{ steps.has-phpunit.outputs.has_phpunit == true }}
+      found: steps.has-phpunit.outputs.has_phpunit == true
     steps:
+      - run: |
+          echo ${{ hashFiles('phpunit.xml.dist') }}
+          echo ${{ hashFiles('asdas') }}
       - uses: actions/checkout@v4
       - id: has-phpunit
         run: |
-          echo "has_phpunit=1" >> "$GITHUB_OUTPUT"
+          if test -f "phpunit.xml.dist"; then
+            echo "has_phpunit=1" >> "$GITHUB_OUTPUT"
+          fi
 
   run-tests:
     name: Run PHPUnit
