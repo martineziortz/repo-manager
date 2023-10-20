@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - check-has-phpunit
-    if: needs.check-has-phpunit.outputs.found == true
+    if: needs.check-has-phpunit.outputs.found == 'true'
 
     services:
       redis:
