@@ -7,5 +7,5 @@ on:
       - develop
 jobs:
   shared-test-runner:
-    uses: dbd-net/misc-repo-manager/.github/workflows/laravel-package-run-tests.yml@develop
+    uses: dbd-net/misc-repo-manager/.github/workflows/shared-laravel-package-run-tests.yml@develop
     secrets: inherit
