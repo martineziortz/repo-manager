@@ -1,4 +1,5 @@
-name: Update parent repo
+name: [Build] Update parent repo
+
 on:
   push:
     tags:

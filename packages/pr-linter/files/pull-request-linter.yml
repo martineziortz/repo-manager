@@ -1,4 +1,4 @@
-name: Check Pull Request requirements
+name: [Lint] Pull request
 
 on:
   pull_request:

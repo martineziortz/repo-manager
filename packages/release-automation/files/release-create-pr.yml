@@ -1,4 +1,4 @@
-name: Create release pull request
+name: [Release] Prepare release PR
 concurrency:
   group: release-pr
   cancel-in-progress: true
@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - develop
+
 jobs:
   create-pr:
     uses: dbd-net/misc-repo-manager/.github/workflows/shared-release-create-pr.yml@develop

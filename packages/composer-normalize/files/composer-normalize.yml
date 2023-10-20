@@ -1,4 +1,4 @@
-name: Normalize composer
+name: [Lint] Composer
 
 on:
   workflow_dispatch:
