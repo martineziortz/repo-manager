@@ -1,0 +1,52 @@
+name: Normalize composer
+
+on:
+  workflow_call:
+
+jobs:
+  composer-normalize:
+    name: composer-normalize
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer-normalize
+          coverage: none
+
+      - uses: swichers/configure-laravel-nova@v1
+        with:
+          user: ${{ secrets.NOVA_USER }}
+          token: ${{ secrets.NOVA_TOKEN }}
+
+      - uses: swichers/configure-repman@v1
+        with:
+          token: ${{ secrets.REPMAN_TOKEN }}
+          organization: dbdnet
+
+      - name: Set composer config
+        run: |
+          composer config optimize-autoloader true
+          composer config preferred-install dist
+          composer config sort-packages true
+          composer config prefer-stable true
+          composer config minimum-stability dev
+          composer config homepage "${{ github.server_url }}/dbd-net/$(basename "${{ github.repository }}")"
+          composer update --lock
+          composer validate --strict
+
+      - name: Normalize composer
+        run: composer-normalize
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[BUILD] Normalize composer'
+          commit_author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
