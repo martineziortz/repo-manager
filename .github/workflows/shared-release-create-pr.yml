@@ -20,9 +20,9 @@ jobs:
         run: |
           import os
 
-          is_automated_build = ${{ startsWith('[BUILD]',  github.event.head_commit.message) }}
-          is_triggered_by_github = ${{ endsWith('[bot]', github.event.head_commit.author.username) }}
-          is_app_project = ${{ startsWith('app-', github.repository) }}
+          is_automated_build = "${{ startsWith('[BUILD]',  github.event.head_commit.message) }}" == "true"
+          is_triggered_by_github = "${{ endsWith('[bot]', github.event.head_commit.author.username) }}" == "true"
+          is_app_project = "${{ startsWith('app-', github.repository) }}" == "true"
           is_app_build = is_app_project and is_automated_build
 
           skip = (is_automated_build and is_triggered_by_github) and not is_app_build
