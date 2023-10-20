@@ -1,4 +1,4 @@
-name: [Test] PHPUnit
+name: '[Test] PHPUnit'
 
 on:
   pull_request_target:

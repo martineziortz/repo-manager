@@ -1,4 +1,4 @@
-name: [Lint] Composer
+name: '[Lint] Composer'
 
 on:
   workflow_dispatch:

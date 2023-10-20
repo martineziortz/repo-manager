@@ -1,4 +1,4 @@
-name: [Lint] PHP CS Fixer
+name: '[Lint] PHP CS Fixer'
 
 on:
   push:

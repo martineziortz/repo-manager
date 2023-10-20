@@ -1,4 +1,4 @@
-name: [Build] Create and deploy release
+name: '[Build] Create and deploy release'
 
 on:
   push:

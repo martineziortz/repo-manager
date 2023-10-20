@@ -1,4 +1,4 @@
-name: [Build] Draft release
+name: '[Build] Draft release'
 
 on:
   push:
