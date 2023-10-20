@@ -1,4 +1,4 @@
-name: [Test] dependabot-auto-merge
+name: dependabot-auto-merge
 on: pull_request_target
 
 permissions:
