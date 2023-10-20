@@ -11,7 +11,7 @@ jobs:
     name: Check if automated
     runs-on: ubuntu-latest
     outputs:
-      automated_commit: ${{ steps.build_commit.outputs.skip == true }}
+      automated_commit: ${{ steps.build_commit.outputs.skip != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Check if needs skip
