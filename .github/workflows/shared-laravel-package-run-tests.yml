@@ -8,7 +8,7 @@ jobs:
     name: Check for PHPUnit
     runs-on: ubuntu-latest
     outputs:
-      found: steps.has-phpunit.outputs.hash != ''
+      found: ${{ steps.has-phpunit.outputs.hash != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Check for phpunit.xml.dist
