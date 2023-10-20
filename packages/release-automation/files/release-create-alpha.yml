@@ -1,7 +1,4 @@
 name: '[Release] Create Alpha tag'
-concurrency:
-  group: alpha-tag
-  cancel-in-progress: true
 
 on:
   push:

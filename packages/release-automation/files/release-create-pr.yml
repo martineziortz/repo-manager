@@ -1,7 +1,4 @@
 name: '[Release] Prepare release PR'
-concurrency:
-  group: release-pr
-  cancel-in-progress: true
 
 on:
   push:
