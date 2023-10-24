@@ -1,0 +1,40 @@
+name: Check if automated
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check_for_automation:
+    name: Check if automated
+    runs-on: ubuntu-latest
+    outputs:
+      is_build: ${{ steps.set_flags.outputs.is_build == 'True' }}
+      is_bot: ${{ steps.set_flags.outputs.is_bot == 'True' }}
+      is_app_build: ${{ steps.set_flags.outputs.is_app_build == 'True' }}
+      is_skippable:  ${{ steps.set_flags.outputs.is_skippable == 'True' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check if needs skip
+        id: set_flags
+        shell: python
+        run: |
+          import os
+
+          is_build = "${{ startsWith(github.event.head_commit.message, '[BUILD]') }}" == "true"
+          is_bot = "${{ endsWith(github.event.head_commit.author.username, '[bot]') }}" == "true"
+          is_app_build = is_build and "${{ startsWith(github.repository, 'app-') }}" == "true"
+          is_skippable = (is_build or is_bot) and not is_app_build
+
+          print(f"is_build={is_build}\n")
+          print(f"is_bot={is_bot}\n")
+          print(f"is_app_build={is_app_build}\n")
+          print(f"is_skippable={is_skippable}\n")
+
+          with open(os.environ.get("GITHUB_OUTPUT", ""), "a") as output_file:
+            output_file.write(f"is_build={is_build}\n")
+            output_file.write(f"is_bot={is_bot}\n")
+            output_file.write(f"is_app_build={is_app_build}\n")
+            output_file.write(f"is_skippable={is_skippable}\n")
