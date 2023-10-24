@@ -16,9 +16,9 @@ change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&'
 commitish: main
 replacers:
-  - search: '/^.+@dependabot.+$/g'
+  - search: '/^.+@dependabot.+$\n/gm'
     replace: ''
-  - search: '/^\[BUILD] Merge develop to main.+$/g'
+  - search: '/^- \[BUILD] Merge develop to main.+$\n/gm'
     replace: ''
 version-resolver:
   major:
