@@ -4,10 +4,16 @@ on:
   workflow_call:
 
 jobs:
+  check_for_automation:
+    uses: ./.github/workflows/shared-is-automated-commit.yml
+
   php-cs-fixer:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    if: needs.check_for_automation.outputs.is_human
+    needs:
+      - check_for_automation
 
     steps:
       - name: Checkout code

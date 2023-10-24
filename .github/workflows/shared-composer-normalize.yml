@@ -7,10 +7,15 @@ permissions:
   contents: write
 
 jobs:
+  check_for_automation:
+    uses: ./.github/workflows/shared-is-automated-commit.yml
+
   composer-normalize:
     name: composer-normalize
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: needs.check_for_automation.outputs.is_human
+    needs:
+      - check_for_automation
 
     steps:
       - uses: actions/checkout@v4

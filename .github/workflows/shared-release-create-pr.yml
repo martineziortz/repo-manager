@@ -8,33 +8,12 @@ on:
 
 jobs:
   check_for_automation:
-    name: Check if automated
-    runs-on: ubuntu-latest
-    outputs:
-      automated_commit: ${{ steps.build_commit.outputs.skip == 'True' }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check if needs skip
-        id: build_commit
-        shell: python
-        run: |
-          import os
-
-          is_automated_build = "${{ startsWith(github.event.head_commit.message, '[BUILD]') }}" == "true"
-          is_triggered_by_github = "${{ endsWith(github.event.head_commit.author.username, '[bot]') }}" == "true"
-          is_app_project = "${{ startsWith(github.repository, 'app-') }}" == "true"
-          is_app_build = is_app_project and is_automated_build
-
-          skip = (is_automated_build and is_triggered_by_github) and not is_app_build
-
-          print(f"skip set to: {skip}")
-          with open(os.environ.get("GITHUB_OUTPUT", ""), "a") as output_file:
-            output_file.write(f"skip={skip}\n")
+    uses: ./.github/workflows/shared-is-automated-commit.yml
 
   create_pull_request:
     name: Create release PR
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.automated_commit == 'false'
+    if: needs.check_for_automation.outputs.is_skippable == false
     needs:
       - check_for_automation
     permissions:

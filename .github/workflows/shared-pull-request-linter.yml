@@ -9,30 +9,12 @@ permissions:
 
 jobs:
   check_for_automation:
-    name: Check if automated
-    runs-on: ubuntu-latest
-    outputs:
-      automated_commit: ${{ steps.build_commit.outputs.skip == true || steps.dependabot_commit.outputs.skip == true || steps.actions_commit.outputs.skip == true }}
-    steps:
-      - name: Is commit automated
-        id: build_commit
-        if: startsWith(github.event.head_commit.message, '[BUILD]')
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is dependabot commit
-        id: dependabot_commit
-        if: github.event.head_commit.author.username == 'dependabot[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is github-actions commit
-        id: actions_commit
-        if: github.event.head_commit.author.username == 'github-actions[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
+    uses: ./.github/workflows/shared-is-automated-commit.yml
 
   title-check:
     name: Includes Jira ticket
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.automated_commit == 'false'
+    if: needs.check_for_automation.outputs.is_human
     needs:
       - check_for_automation
     steps:
@@ -44,7 +26,7 @@ jobs:
   merge-check:
     name: No merge commits
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.automated_commit == 'false'
+    if: needs.check_for_automation.outputs.is_human
     needs:
       - check_for_automation
     steps:
@@ -58,7 +40,7 @@ jobs:
   branch-check:
     name: Not working from `develop`
     runs-on: ubuntu-latest
-    if: github.base_ref == 'develop' && github.base_ref == github.head_ref && needs.check_for_automation.outputs.automated_commit == 'false'
+    if: github.base_ref == 'develop' && github.base_ref == github.head_ref && needs.check_for_automation.outputs.is_human
     needs:
       - check_for_automation
     steps:
@@ -75,7 +57,7 @@ jobs:
       - merge-check
       - branch-check
     runs-on: ubuntu-latest
-    if: failure() && ${{ github.actor != 'dependabot[bot]' }} && ${{ github.actor != 'github-actions[bot]' }}
+    if: failure() && needs.check_for_automation.outputs.is_bot == false
     steps:
       - name: Comment on Pull Request
         uses: actions/github-script@v6
