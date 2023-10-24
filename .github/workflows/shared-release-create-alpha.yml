@@ -8,30 +8,12 @@ on:
 
 jobs:
   check_for_automation:
-    name: Check if automated
-    runs-on: ubuntu-latest
-    outputs:
-      automated_commit: ${{ steps.build_commit.outputs.skip == true || steps.dependabot_commit.outputs.skip == true || steps.actions_commit.outputs.skip == true }}
-    steps:
-      - name: Is commit automated
-        id: build_commit
-        if: startsWith(github.event.head_commit.message, '[BUILD]')
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is dependabot commit
-        id: dependabot_commit
-        if: github.event.head_commit.author.username == 'dependabot[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
-
-      - name: Is github-actions commit
-        id: actions_commit
-        if: github.event.head_commit.author.username == 'github-actions[bot]'
-        run: echo "skip=1" >> "$GITHUB_OUTPUT"
+    uses: ./.github/workflows/shared-is-automated-commit.yml
 
   taggit:
     name: Create alpha tag
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.automated_commit == 'false'
+    if: needs.check_for_automation.outputs.is_skippable == 'false'
     needs:
       - check_for_automation
     permissions:
