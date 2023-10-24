@@ -38,3 +38,9 @@ jobs:
             output_file.write(f"is_bot={is_bot}\n")
             output_file.write(f"is_app_build={is_app_build}\n")
             output_file.write(f"is_skippable={is_skippable}\n")
+      - name: Check flags
+        run: |
+          echo "is_build=${{ steps.set_flags.outputs.is_build }}"
+          echo "is_bot=${{ steps.set_flags.outputs.is_bot }}"
+          echo "is_app_build=${{ steps.set_flags.outputs.is_app_build }}"
+          echo "is_skippable=${{ steps.set_flags.outputs.is_skippable }}"
