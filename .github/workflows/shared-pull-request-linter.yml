@@ -68,7 +68,8 @@ jobs:
           exit 1
 
   comment:
-    permissions: write-all
+    permissions:
+      pull-requests: write
     needs:
       - title-check
       - merge-check
