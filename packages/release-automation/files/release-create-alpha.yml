@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create-alpha-tag:
     uses: dbd-net/misc-repo-manager/.github/workflows/shared-release-create-alpha.yml@develop

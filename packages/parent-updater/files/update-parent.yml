@@ -8,6 +8,9 @@ on:
       - '!v?[0-9]+.**-beta**'
       - '!v?[0-9]+.**-alpha**'
 
+permissions:
+  contents: write
+
 jobs:
   shared-parent-updater:
     uses: dbd-net/misc-repo-manager/.github/workflows/shared-laravel-package-update-parent.yml@develop

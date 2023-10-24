@@ -3,13 +3,14 @@ name: Normalize composer
 on:
   workflow_call:
 
+permissions:
+  contents: write
+
 jobs:
   composer-normalize:
     name: composer-normalize
     runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
