@@ -5,7 +5,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
+  pull-requests: read
 
 jobs:
   check_for_automation:
@@ -68,6 +68,8 @@ jobs:
           exit 1
 
   comment:
+    permissions:
+      pull-requests: write
     needs:
       - title-check
       - merge-check
