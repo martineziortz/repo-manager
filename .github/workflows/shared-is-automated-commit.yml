@@ -28,21 +28,13 @@ jobs:
           is_app_build = is_build and "${{ startsWith(github.repository, 'app-') }}" == "true"
           is_skippable = (is_build or is_bot) and not is_app_build
 
+          print(f"is_build={is_build}\n")
+          print(f"is_bot={is_bot}\n")
+          print(f"is_app_build={is_app_build}\n")
+          print(f"is_skippable={is_skippable}\n")
+
           with open(os.environ.get("GITHUB_OUTPUT", ""), "a") as output_file:
             output_file.write(f"is_build={is_build}\n")
             output_file.write(f"is_bot={is_bot}\n")
             output_file.write(f"is_app_build={is_app_build}\n")
             output_file.write(f"is_skippable={is_skippable}\n")
-
-  check_flags:
-    name: Review automation flags
-    runs-on: ubuntu-latest
-    needs:
-      - check_for_automation
-    steps:
-      - name: Check flags
-        run: |
-          echo "is_build=${{ needs.check_for_automation.outputs.is_build }}"
-          echo "is_bot=${{ needs.check_for_automation.outputs.is_bot }}"
-          echo "is_app_build=${{ needs.check_for_automation.outputs.is_app_build }}"
-          echo "is_skippable=${{ needs.check_for_automation.outputs.is_skippable }}"
