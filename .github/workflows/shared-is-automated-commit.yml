@@ -45,9 +45,9 @@ jobs:
           is_automated = is_build or is_bot
           is_skippable = is_automated and not is_app_build
 
-          printf(f"Commit message: ${{ github.event.head_commit.message }}\n")
-          printf(f"Author: ${{ github.event.head_commit.author.username }}\n")
-          printf(f"Repository: ${{ github.repository }}\n")
+          print(f"Commit message: ${{ github.event.head_commit.message }}\n")
+          print(f"Author: ${{ github.event.head_commit.author.username }}\n")
+          print(f"Repository: ${{ github.repository }}\n")
 
           print(f"is_build={is_build}\n")
           print(f"is_bot={is_bot}\n")
