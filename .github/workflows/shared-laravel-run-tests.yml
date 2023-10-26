@@ -16,7 +16,7 @@ jobs:
         run: echo "hash=${{ hashFiles('phpunit.xml.dist') }}" >> "$GITHUB_OUTPUT"
 
   check-for-automation:
-    uses: ./.github/workflows/shared-is-automated-commit.yml
+    uses: dbd-net/misc-repo-manager/.github/workflows/shared-is-automated-commit.yml@develop
 
   dbg:
     runs-on: ubuntu-latest
