@@ -16,7 +16,7 @@ jobs:
         run: echo "hash=${{ hashFiles('phpunit.xml.dist') }}" >> "$GITHUB_OUTPUT"
 
   check-for-automation:
-    uses: dbd-net/misc-repo-manager/.github/workflows/shared-is-automated-commit.yml@develop
+    uses: ./.github/workflows/shared-is-automated-commit.yml
 
   dbg:
     runs-on: ubuntu-latest
@@ -27,6 +27,7 @@ jobs:
       - run: |
           echo 'phpunit ${{ needs.check-has-phpunit.outputs.found }}'
           echo 'human ${{ needs.check-for-automation.outputs.is_human }}'
+          echo '${{ toJson(needs.check-has-phpunit.outputs) }}'
           echo '${{ toJson(needs.check-for-automation.outputs) }}'
 
   run-tests:
