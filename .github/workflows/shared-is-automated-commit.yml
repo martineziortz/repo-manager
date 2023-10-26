@@ -45,15 +45,15 @@ jobs:
           is_automated = is_build or is_bot
           is_skippable = is_automated and not is_app_build
 
-          print(f"Commit message: ${{ github.event.head_commit.message }}\n")
-          print(f"Author: ${{ github.event.head_commit.author.username }}\n")
-          print(f"Repository: ${{ github.repository }}\n")
+          print(f"Commit message: ${{ github.event.head_commit.message }}")
+          print(f"Author: ${{ github.event.head_commit.author.username }}")
+          print(f"Repository: ${{ github.repository }}")
 
-          print(f"is_build={is_build}\n")
-          print(f"is_bot={is_bot}\n")
-          print(f"is_app_build={is_app_build}\n")
-          print(f"is_skippable={is_skippable}\n")
-          print(f"is_automated={is_automated}\n")
+          print(f"is_build={is_build}")
+          print(f"is_bot={is_bot}")
+          print(f"is_app_build={is_app_build}")
+          print(f"is_skippable={is_skippable}")
+          print(f"is_automated={is_automated}")
 
           with open(os.environ.get("GITHUB_OUTPUT", ""), "a") as output_file:
             output_file.write(f"is_build={is_build}\n")
