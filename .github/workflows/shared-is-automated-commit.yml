@@ -2,12 +2,25 @@ name: Check if automated
 
 on:
   workflow_call:
+    outputs:
+      is_build: 
+        value: ${{ jobs.check-for-automation.outputs.is_build }}
+      is_bot: 
+        value: ${{ jobs.check-for-automation.outputs.is_bot }}
+      is_app_build: 
+        value: ${{ jobs.check-for-automation.outputs.is_app_build }}
+      is_skippable: 
+        value: ${{ jobs.check-for-automation.outputs.is_skippable }}
+      is_automated: 
+        value: ${{ jobs.check-for-automation.outputs.is_automated }}
+      is_human: 
+        value: ${{ jobs.check-for-automation.outputs.is_human }}
 
 permissions:
   contents: read
 
 jobs:
-  check_for_automation:
+  check-for-automation:
     name: Check if automated
     runs-on: ubuntu-latest
     outputs:
