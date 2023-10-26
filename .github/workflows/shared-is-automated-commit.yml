@@ -41,7 +41,7 @@ jobs:
 
           is_build = "${{ startsWith(github.event.head_commit.message, '[BUILD]') }}" == "true"
           is_bot = "${{ endsWith(github.event.head_commit.author.username, '[bot]') }}" == "true"
-          is_app_build = is_build and "${{ startsWith(github.repository, 'app-') }}" == "true"
+          is_app_build = is_build and "${{ startsWith(github.event.repository.name, 'app-') }}" == "true"
           is_automated = is_build or is_bot
           is_skippable = is_automated and not is_app_build
 
@@ -50,7 +50,7 @@ jobs:
           ${{ github.event.head_commit.message }}
           """)
           print(f"Author: ${{ github.event.head_commit.author.username }}")
-          print(f"Repository: ${{ github.repository }}")
+          print(f"Repository: ${{ github.event.repository.name }}")
 
           print(f"is_build={is_build}")
           print(f"is_bot={is_bot}")
