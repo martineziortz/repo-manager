@@ -24,7 +24,7 @@ jobs:
     needs:
       - check-has-phpunit
       - check_for_automation
-    if: needs.check-has-phpunit.outputs.found && needs.check_for_automation.outputs.is_human
+    if: ${{ needs.check-has-phpunit.outputs.found && needs.check_for_automation.outputs.is_human }}
 
     services:
       mysql:
