@@ -18,25 +18,13 @@ jobs:
   check-for-automation:
     uses: ./.github/workflows/shared-is-automated-commit.yml
 
-  dbg:
-    runs-on: ubuntu-latest
-    needs:
-      - check-has-phpunit
-      - check-for-automation
-    steps:
-      - run: |
-          echo 'phpunit ${{ needs.check-has-phpunit.outputs.found }}'
-          echo 'human ${{ needs.check-for-automation.outputs.is_human }}'
-          echo '${{ toJson(needs.check-has-phpunit.outputs) }}'
-          echo '${{ toJson(needs.check-for-automation.outputs) }}'
-
   run-tests:
     name: Run PHPUnit
     runs-on: ubuntu-latest
     needs:
       - check-has-phpunit
       - check-for-automation
-    if: ${{ needs.check-has-phpunit.outputs.found && needs.check-for-automation.outputs.is_human }}
+    if: needs.check-has-phpunit.outputs.found && needs.check-for-automation.outputs.is_human
 
     services:
       mysql:
