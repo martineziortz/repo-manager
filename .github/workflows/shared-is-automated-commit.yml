@@ -16,7 +16,7 @@ jobs:
       is_app_build: ${{ steps.set_flags.outputs.is_app_build == 'True' }}
       is_skippable: ${{ steps.set_flags.outputs.is_skippable == 'True' }}
       is_automated: ${{ steps.set_flags.outputs.is_automated == 'True' }}
-      is_human: ${{ steps.set_flags.outputs.is_automated == false }}
+      is_human: ${{ steps.set_flags.outputs.is_automated == 'False' }}
 
     steps:
       - uses: actions/checkout@v4
