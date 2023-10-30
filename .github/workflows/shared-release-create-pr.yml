@@ -13,7 +13,7 @@ jobs:
   create_pull_request:
     name: Create release PR
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.is_skippable == false
+    if: needs.check_for_automation.outputs.is_skippable == 'false'
     needs:
       - check_for_automation
     permissions:
