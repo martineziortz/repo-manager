@@ -38,15 +38,13 @@ jobs:
 
     services:
       mysql:
-        image: mysql:latest
+        image: bitnami/mysql:latest
         env:
           MYSQL_DATABASE: laravel
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
         options: >-
-          --character-set-server=utf8mb4 
-          --collation-server=utf8mb4_unicode_ci
           --health-cmd "mysqladmin ping"
           --health-interval 10s
           --health-timeout 5s
