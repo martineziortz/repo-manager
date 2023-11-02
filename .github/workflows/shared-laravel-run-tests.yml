@@ -38,12 +38,10 @@ jobs:
 
     services:
       mysql:
-        image: bitnami/mysql:latest
+        image: mysql:latest
         env:
           MYSQL_DATABASE: laravel
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_COLLATE: utf8_general_ci
-          MYSQL_CHARACTER_SET: utf8
         ports:
           - 3306:3306
         options: >-
