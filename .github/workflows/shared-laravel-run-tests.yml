@@ -120,8 +120,8 @@ jobs:
 
       - name: Execute application tests
         if: ${{ hashFiles('app/') != '' }}
-        run: php artisan test --parallel --recreate-databases
+        run: php artisan test
 
       - name: Execute package tests
         if: ${{ hashFiles('src/') != '' }}
-        run: vendor/bin/testbench package:test --parallel
+        run: vendor/bin/testbench package:test
