@@ -3,13 +3,13 @@ on:
   workflow_dispatch:
     inputs:
       repository:
-        description: 'The repository to tag'
+        description: 'The repository to tag (the name without dbd-net)'
         required: true
         type: string
   workflow_call:
     inputs:
       repository:
-        description: 'The repository to tag'
+        description: 'The repository to tag (the name without dbd-net)'
         required: true
         type: string
 
@@ -22,6 +22,10 @@ jobs:
     name: Tagging ${{ inputs.repository }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check input syntax
+        if: ${{ startsWith(inputs.repository, github.repository_owner) }}
+        run: exit 1
+
       - uses: actions/checkout@v4
 
       - name: Fetch composer files
