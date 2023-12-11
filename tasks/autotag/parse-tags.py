@@ -1,5 +1,4 @@
-from pkg_resources import parse_version
-from pkg_resources.extern import packaging
+from packaging.version import InvalidVersion, parse as parse_version
 from slugify import slugify
 import argparse
 import json
@@ -45,7 +44,7 @@ def get_labels_from_composer_lock_file(lock_data, mapping_data, key="packages"):
         # These will trigger a ValueError when attempting to parse. We currently
         # only care about stable major versions for tagging, so ignore things that
         # aren't.
-        except ValueError:
+        except InvalidVersion:
             pass
         else:
             labels.extend(map(lambda x: x + '-' + version, alternates))
@@ -54,15 +53,11 @@ def get_labels_from_composer_lock_file(lock_data, mapping_data, key="packages"):
 
 def get_major_version(version):
     # Change v1.0-dev into 1.0-dev
-    cleaned = re.sub("^v", "", version)
+    cleaned = re.sub(r"^v", "", version)
     # Change 1.x-dev into 1.0-dev
-    cleaned = re.sub("\.x", ".0", cleaned)
+    cleaned = re.sub(r"\.x", ".0", cleaned)
     parsed = parse_version(cleaned)
 
-    # If something was not close to a semver it gets parsed as-is
-    # We want to err on the side of caution, so abort.
-    if (isinstance(parsed, packaging.version.LegacyVersion)):
-        raise ValueError("Version format unsupported: " + str(version))
     return str(parsed.major)
 
 def map_to_alternate_tags(data, mapping_data, partial_match=False):

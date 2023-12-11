@@ -13,6 +13,10 @@ on:
         required: true
         type: string
 
+env:
+  GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+  GH_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
+
 jobs:
   autotag:
     name: Tagging ${{ inputs.repository }}

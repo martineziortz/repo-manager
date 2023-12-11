@@ -25,7 +25,7 @@ jobs:
       repos: ${{ steps.set-repo-list.outputs.REPO_LIST }}
     steps:
       - uses: actions/checkout@v4
-      - name: Get repostiory list
+      - name: Get repository list
         id: set-repo-list
         run: |
           echo "REPO_LIST=$(./bin/get-repos.sh | jq -cM '. | keys')" >> "$GITHUB_OUTPUT"
