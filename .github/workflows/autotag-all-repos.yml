@@ -1,0 +1,36 @@
+name: Automatically tag repositories
+concurrency:
+  group: autotag
+  cancel-in-progress: true
+
+env:
+  GITHUB_TOKEN: ${{ secrets.REPO_PUSH_PAT }}
+  GH_TOKEN: ${{ secrets.REPO_MANAGER_PAT }}
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 */14 * *'
+  push:
+    paths:
+      - 'tasks/autotag/*'
+    branches:
+      - develop
+
+jobs:
+  get-repos:
+    name: Get the list of repos to update
+    runs-on: ubuntu-latest
+    outputs:
+      repos: ${{ steps.set-repo-list.outputs.REPO_LIST }}
+
+  autotag:
+    needs:
+      - get-repos
+    strategy:
+      max-parallel: 3
+      matrix: ${{ fromJson(needs.get-repos.outputs.repos) }}
+    uses: dbd-net/misc-repo-manager/.github/workflows/autotag.yml@develop
+    secrets: inherit
+    with:
+      repository: ${{ matrix.repository }}
