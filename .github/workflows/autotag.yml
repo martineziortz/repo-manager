@@ -23,8 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check input syntax
-        if: ${{ startsWith(inputs.repository, github.repository_owner) }}
-        run: exit 1
+        if: ${{ contains(inputs.repository, '/') }}
+        run: |
+          echo '::error::This workflow should be given the repository name without the organization'
+          exit 1
 
       - uses: actions/checkout@v4
 
