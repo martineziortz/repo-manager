@@ -34,8 +34,10 @@ jobs:
     needs:
       - get-repos
     strategy:
+      fail-fast: true
       max-parallel: 3
-      matrix: ${{ fromJson(needs.get-repos.outputs.repos) }}
+      matrix:
+        repository: ${{ fromJson(needs.get-repos.outputs.repos) }}
     uses: dbd-net/misc-repo-manager/.github/workflows/autotag.yml@develop
     secrets: inherit
     with:
