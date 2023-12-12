@@ -13,7 +13,7 @@ jobs:
   taggit:
     name: Create alpha tag
     runs-on: ubuntu-latest
-    if: needs.check_for_automation.outputs.is_skippable == false
+    if: needs.check_for_automation.outputs.is_skippable == 'false'
     needs:
       - check_for_automation
     permissions:
@@ -21,7 +21,9 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Fetch version history
         run: git fetch --tags
 
