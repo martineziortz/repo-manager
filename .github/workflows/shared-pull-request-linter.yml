@@ -57,7 +57,7 @@ jobs:
       - merge-check
       - branch-check
     runs-on: ubuntu-latest
-    if: failure() && needs.check_for_automation.outputs.is_bot == false
+    if: failure() && needs.check_for_automation.outputs.is_bot == 'false'
     steps:
       - name: Comment on Pull Request
         uses: actions/github-script@v7
