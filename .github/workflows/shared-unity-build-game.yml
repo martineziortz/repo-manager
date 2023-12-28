@@ -81,7 +81,7 @@ jobs:
           tar -czvf "${{ env.BUILD_NAME }}--${{ steps.unity-build.outputs.buildVersion }}.tar.gz" -C "build/${{ matrix.platform }}/game" .
 
       - name: Upload builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.BUILD_NAME }}--${{ steps.unity-build.outputs.buildVersion }}"
           path: "${{ env.BUILD_NAME }}--${{ steps.unity-build.outputs.buildVersion }}.tar.gz"
