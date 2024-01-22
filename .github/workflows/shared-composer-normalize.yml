@@ -24,7 +24,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo, :php-psr
+          extensions: :php-psr
           tools: composer-normalize
           coverage: none
 
@@ -46,11 +46,11 @@ jobs:
           composer config prefer-stable true
           composer config minimum-stability dev
           composer config homepage "${{ github.server_url }}/dbd-net/$(basename "${{ github.repository }}")"
-          composer update --lock
+          composer update --ignore-platform-reqs --lock
           composer validate --strict
 
       - name: Normalize composer
-        run: composer-normalize
+        run: composer-normalize --ignore-platform-reqs
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
