@@ -18,6 +18,7 @@ jobs:
         run: |
           echo "package_name=$( jq -Mcr .name composer.json )" >> "$GITHUB_OUTPUT"
           echo "parent_repos=$( jq -Mcr '.extra.dbdci."push-releases-to"  | if type=="array" then . else [. ] end' composer.json )" >> "$GITHUB_OUTPUT"
+          echo "$( jq -Mcr '.extra.dbdci."push-releases-to"  | if type=="array" then . else [. ] end' composer.json )"
 
   update-parent-repo:
     runs-on: ubuntu-latest
