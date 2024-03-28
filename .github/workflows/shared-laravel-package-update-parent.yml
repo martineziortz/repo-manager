@@ -25,7 +25,7 @@ jobs:
     name: Update ${{ matrix.repository }}
     needs:
       - parse-composer-json
-    if: ${{ needs.parse-composer-json.outputs.parent_repos }}
+    if: ${{ needs.parse-composer-json.outputs.parent_repos != '[null]' }}
     permissions:
       contents: write
     strategy:
