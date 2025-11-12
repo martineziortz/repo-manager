@@ -32,7 +32,7 @@ jobs:
       is_human: ${{ steps.set_flags.outputs.is_automated == 'False' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check if needs skip
         id: set_flags
         shell: python

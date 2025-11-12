@@ -24,7 +24,7 @@ jobs:
     outputs:
       repos: ${{ steps.set-repo-list.outputs.REPO_LIST }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Get repository list
         id: set-repo-list
         run: |

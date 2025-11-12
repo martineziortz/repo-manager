@@ -31,7 +31,7 @@ jobs:
       - check_for_automation
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Check for merge commits
         uses: NexusPHP/no-merge-commits@v2.1.0
         with:
