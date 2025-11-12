@@ -28,7 +28,7 @@ jobs:
           echo '::error::This workflow should be given the repository name without the organization'
           exit 1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Fetch composer files
         continue-on-error: true

@@ -12,7 +12,7 @@ jobs:
       scripts: ${{ steps.build-scripts.outputs.SCRIPTS }}
       semver: ${{ steps.version.outputs.semver }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Fetch version history
         run: git fetch --tags
@@ -52,7 +52,7 @@ jobs:
     env:
       BUILD_NAME: ${{ matrix.script.name }}--${{ matrix.script.device }}--${{ matrix.platform }}--${{ needs.meta-info.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Cache assets and packages
         uses: actions/cache@v4

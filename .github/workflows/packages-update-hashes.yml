@@ -16,7 +16,7 @@ jobs:
     name: Add or update package hashes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: ./bin/packages/update-package-hashes.sh
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
